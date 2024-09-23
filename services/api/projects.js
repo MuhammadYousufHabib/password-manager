@@ -1,11 +1,11 @@
-const BASE_URL =  'http://localhost:8000';
+import { del, get, patch, post } from './apiUtils';
 
-export const fetchProjects = async () => {
-  const response = await fetch(`${BASE_URL}/project`);
-  if (!response.ok) {
-    const error = new Error('Failed to fetch projects');
-    error.status = response.status;
-    throw error;
-  }
-  return response.json();
-};
+export const fetchProjects = async () => await get("project");
+
+export const fetchProjectById = async (projectId) => await get(`project/${projectId}`);
+
+export const createProject = async (projectData) => await post("project", projectData);
+
+export const updateProject = async (projectId, projectData) => await patch(`project/${projectId}`, projectData);
+
+export const deleteProject = async (projectId) => await del(`project/${projectId}`);

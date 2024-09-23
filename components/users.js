@@ -7,7 +7,6 @@ import AddUserModal from './add-user-modal'
 import { fetchRoles } from '@/services/api/roles'  
 
 export default function UsersPage({ users }) {
-  console.log("users",users)
   const [isModalOpen, setModalOpen] = useState(false)
   const [roleOptions, setRoleOptions] = useState([])
 

@@ -26,7 +26,6 @@ const Login = () => {
       body: urlEncodedBody.toString(),
     });
 
-    console.log(response.headers)
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -41,7 +40,7 @@ const Login = () => {
     setError('');
 
     if (!username && !password) {
-      setError('Username is required and Password is required.');
+      setError('Username and Password is required.');
       return;
     }
 
@@ -58,9 +57,7 @@ const Login = () => {
 
     try {
       const { access_token } = await loginUser(username, password);
-      console.log(access_token, "response from userLogin");
       setCookie("access_token",access_token)
-      localStorage.setItem('token', access_token);
       router.push("/dashboard");
     } catch (error) {
       setError('Invalid credentials. Please try again.');

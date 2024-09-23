@@ -1,11 +1,11 @@
-const BASE_URL =  'http://localhost:8000';
+import { del, get, patch, post } from './apiUtils';
 
-export const fetchPermissions = async () => {
-  const response = await fetch(`${BASE_URL}/permission`);
-  if (!response.ok) {
-    const error = new Error('Failed to fetch permissions');
-    error.status = response.status;
-    throw error;
-  }
-  return response.json();
-};
+export const fetchPermissions = async () => await get("permission");
+
+export const fetchPermissionById = async (permissionId) => await get(`permission/${permissionId}`);
+
+export const createPermission = async (permissionData) => await post("permission", permissionData);
+
+export const updatePermission = async (permissionId, permissionData) => await patch(`permission/${permissionId}`, permissionData);
+
+export const deletePermission = async (permissionId) => await del(`permission/${permissionId}`);
