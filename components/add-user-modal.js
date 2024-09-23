@@ -1,20 +1,38 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions }) => {
+const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions,user }) => {
   const [newUser, setNewUser] = useState({
     name: '',
     username: '',
     email: '',
     password: '',
-    role: ''
+    role: '' 
   })
-
+  useEffect(() => {
+    if (user) {
+      setNewUser({
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        password: '', 
+        role: user.role || ''
+      });
+    } else {
+      setNewUser({
+        name: '',
+        username: '',
+        email: '',
+        password: '',
+        role: ''
+      });
+    }
+  }, [user]);
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setNewUser(prev => ({ ...prev, [name]: value }))
@@ -22,12 +40,13 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions }) => {
 
   const handleRoleChange = (e) => {
     const selectedRole = e.target.value;
-    setNewUser(prev => ({ ...prev, role: selectedRole }));
+    setNewUser(prev => ({ ...prev, role: selectedRole  }));
   }
  
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(newUser);
+    onSubmit({ ...newUser, id: user?.id }); // Include ID for editing
+
     setNewUser({ name: '', username: '', email: '', password: '', role: '' });
     onClose(); 
   }
@@ -95,7 +114,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions }) => {
                   value={newUser.role}
                   onChange={handleRoleChange}
                   className="col-span-3 border rounded-md"
-                  required
+                  
                 >
                   <option value="">Select a role</option>
                   {roleOptions.map((role) => (

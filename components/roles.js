@@ -1,47 +1,89 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { PlusIcon, Pencil, Trash2 } from "lucide-react"
-import RolesModal from './roles-modal'  
-import { fetchPermissions } from '@/services/api/permissions'  
+import React, { useState, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { PlusIcon, Pencil, Trash2 } from "lucide-react";
+import RolesModal from './roles-modal';  
+import { fetchPermissions } from '@/services/api/permissions';  
 
-export function RolesJs({ roles }) {
-  const [isModalOpen, setModalOpen] = useState(false)
-  const [permissionOptions, setPermissionOptions] = useState([])
+export function RolesJs({ roles: initialRoles }) {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [permissionOptions, setPermissionOptions] = useState([]);
+  const [editingRole, setEditingRole] = useState(null);
+  const [roles, setRoles] = useState(initialRoles || []);
 
   useEffect(() => {
     const getPermissions = async () => {
       try {
-        const permissions = await fetchPermissions()
-        setPermissionOptions(permissions)
+        const permissions = await fetchPermissions();
+        setPermissionOptions(permissions);
       } catch (error) {
-        console.error('Failed to fetch permissions:', error)
+        console.error('Failed to fetch permissions:', error);
       }
-    }
+    };
 
-    getPermissions()
-  }, [])
+    getPermissions();
+  }, []);
 
-  const handleAddRole = async (role) => {
+  const handleAddRole = async () => {
     try {
-      const response = await fetch('/api/roles', {
-        method: 'POST',
+      const response = await fetchPermissions()
+        setPermissionOptions(response)
+      if (!response.ok) {
+        throw new Error('Failed to add role');
+      }
+
+      const newRole = await response.json(); // Assuming the API returns the created role
+      setRoles((prev) => [...prev, newRole]); // Add the new role to the existing roles
+      setModalOpen(false);
+    } catch (error) {
+      console.log("tryed")
+
+      console.error('Failed to add role:', error);
+    }
+  };
+
+  const handleEditRole = (role) => {
+    setEditingRole(role);
+    setModalOpen(true);
+  };
+
+  const handleUpdateRole = async (updatedRole) => {
+    try {
+      const response = await fetch(`/api/roles/${updatedRole.id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(role),
-      })
+        body: JSON.stringify(updatedRole),
+      });
 
       if (!response.ok) {
-        throw new Error('Failed to add role')
+        throw new Error('Failed to update role');
       }
-      setModalOpen(false)  
+      setRoles((prev) => prev.map(role => role.id === updatedRole.id ? updatedRole : role));
+      setModalOpen(false);
+      setEditingRole(null);
     } catch (error) {
-      console.error('Failed to add role:', error)
+      console.error('Failed to update role:', error);
     }
-  }
+  };
+
+  const handleDeleteRole = async (id) => {
+    try {
+      const response = await fetch(`/api/roles/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete role');
+      }
+      setRoles((prev) => prev.filter(role => role.id !== id));
+    } catch (error) {
+      console.error('Failed to delete role:', error);
+    }
+  };
 
   return (
     <div className="container mx-auto ">
@@ -60,11 +102,11 @@ export function RolesJs({ roles }) {
                 <TableCell>{role.name}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
-                    <Button size="sm" variant="outline">
+                    <Button onClick={() => handleEditRole(role)} size="sm" variant="outline">
                       <Pencil className="h-4 w-4 mr-1" />
                       Edit
                     </Button>
-                    <Button size="sm" variant="outline" className="text-red-500 hover:text-red-700">
+                    <Button onClick={() => handleDeleteRole(role.id)} size="sm" variant="outline" className="text-red-500 hover:text-red-700">
                       <Trash2 className="h-4 w-4 mr-1" />
                       Delete
                     </Button>
@@ -75,15 +117,19 @@ export function RolesJs({ roles }) {
           </TableBody>
         </Table>
       </div>
-      <Button className="mt-4" onClick={() => setModalOpen(true)}>
+      <Button className="mt-4" onClick={() => {
+        setEditingRole(null); // Clear editing state for adding
+        setModalOpen(true);
+      }}>
         <PlusIcon className="h-4 w-4 mr-1" />
         Add Role
       </Button>
       <RolesModal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
-        onSubmit={handleAddRole}
+        onSubmit={editingRole ? handleUpdateRole : handleAddRole}
         permissionOptions={permissionOptions}  
+        role={editingRole} // Pass the role being edited
       />
     </div>
   );

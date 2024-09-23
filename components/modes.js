@@ -4,15 +4,33 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusIcon, Pencil, Trash2 } from "lucide-react";
-import ModesModal from './modes-modal'; // Import your ModesModal component
+import ModesModal from './modes-modal'; 
 
 export function ModesJs({ modes: initialModes }) {
-  const [modes, setModes] = useState(initialModes || []); // Initialize modes state with props
+  const [modes, setModes] = useState(initialModes || []); 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingMode, setEditingMode] = useState(null);
 
   const handleAddMode = (newMode) => {
-    setModes((prevModes) => [...prevModes, newMode]); // Add new mode to the state
-    setIsModalOpen(false); // Close the modal after adding
+    setModes((prevModes) => [...prevModes, newMode]); 
+    setIsModalOpen(false); 
+  };
+
+  const handleEditMode = (mode) => {
+    setEditingMode(mode);
+    setIsModalOpen(true);
+  };
+
+  const handleUpdateMode = (updatedMode) => {
+    setModes((prevModes) => 
+      prevModes.map(mode => mode.name === editingMode.name ? updatedMode : mode)
+    );
+    setIsModalOpen(false);
+    setEditingMode(null);
+  };
+
+  const handleDeleteMode = (modeName) => {
+    setModes((prevModes) => prevModes.filter(mode => mode.name !== modeName));
   };
 
   return (
@@ -29,14 +47,14 @@ export function ModesJs({ modes: initialModes }) {
           <TableBody>
             {modes.map((mode, index) => (
               <TableRow key={index}>
-                <TableCell>{mode.name}</TableCell> {/* Display mode name */}
+                <TableCell>{mode.name}</TableCell> 
                 <TableCell>
                   <div className="flex space-x-2">
-                    <Button size="sm" variant="outline">
+                    <Button onClick={() => handleEditMode(mode)} size="sm" variant="outline">
                       <Pencil className="h-4 w-4 mr-1" />
                       Edit
                     </Button>
-                    <Button size="sm" variant="outline" className="text-red-500 hover:text-red-700">
+                    <Button onClick={() => handleDeleteMode(mode.name)} size="sm" variant="outline" className="text-red-500 hover:text-red-700">
                       <Trash2 className="h-4 w-4 mr-1" />
                       Delete
                     </Button>
@@ -47,14 +65,18 @@ export function ModesJs({ modes: initialModes }) {
           </TableBody>
         </Table>
       </div>
-      <Button className="mt-4" onClick={() => setIsModalOpen(true)}>
+      <Button className="mt-4" onClick={() => {
+        setEditingMode(null); // Clear editing state for adding
+        setIsModalOpen(true);
+      }}>
         <PlusIcon className="h-4 w-4 mr-1" />
         Add Mode
       </Button>
       <ModesModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        onSubmit={handleAddMode} 
+        onSubmit={editingMode ? handleUpdateMode : handleAddMode} 
+        mode={editingMode} 
       />
     </div>
   );

@@ -1,15 +1,27 @@
 'use client';
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions }) => {
+const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions, permission }) => {
   const [newPermission, setNewPermission] = useState({
     name: '',
-    allowedApi: ''
+    allowedApi: '' 
   });
+
+  useEffect(() => {
+    if (permission) {
+      setNewPermission({
+        name: permission.name,
+        allowedApi: permission.allowed_api,
+      });
+    } else {
+      setNewPermission({ name: '', allowedApi: '' });
+    }
+  }, [permission]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -23,7 +35,7 @@ const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(newPermission);
+    onSubmit({ ...newPermission, id: permission?.id || Date.now() }); // Include ID for editing or generate a new one
     setNewPermission({ name: '', allowedApi: '' });
     onClose();
   };
@@ -32,7 +44,7 @@ const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions }) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-gray-100 text-black">
         <DialogHeader>
-          <DialogTitle>Add New Permission</DialogTitle>
+          <DialogTitle>{permission ? 'Edit Permission' : 'Add New Permission'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
@@ -48,15 +60,15 @@ const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions }) => {
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              {/* <Label htmlFor="allowedApi" className="text-right">Allowed API</Label> */}
+              <Label htmlFor="allowedApi" className="text-right">Allowed API</Label>
               <div className="col-span-3">
-                {/* <select
+                <select
                   id="allowedApi"
                   name="allowedApi"
                   value={newPermission.allowedApi}
                   onChange={handleApiChange}
                   className="border rounded-md"
-                  required
+                  
                 >
                   <option value="">Select an API</option>
                   {apiOptions.map((api, index) => (
@@ -64,12 +76,12 @@ const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions }) => {
                       {api}
                     </option>
                   ))}
-                </select> */}
+                </select>
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Add Permission</Button>
+            <Button type="submit">{permission ? 'Update Permission' : 'Add Permission'}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

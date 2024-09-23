@@ -1,32 +1,43 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions }) => {
-  const [role, setRole] = useState({
+const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role }) => {
+  const [roleData, setRoleData] = useState({
     name: '',
     permissions: ''
   });
 
+  useEffect(() => {
+    if (role) {
+      setRoleData({
+        name: role.name,
+        permissions: role.permissions,
+      });
+    } else {
+      setRoleData({ name: '', permissions: '' });
+    }
+  }, [role]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setRole(prev => ({ ...prev, [name]: value }));
+    setRoleData(prev => ({ ...prev, [name]: value }));
   };
 
   const handlePermissionChange = (e) => {
     const selectedPermission = e.target.value;
-    setRole(prev => ({ ...prev, permissions: selectedPermission }));
+    setRoleData(prev => ({ ...prev, permissions: selectedPermission }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (role.name.trim() !== '') {
-      onSubmit(role);
-      setRole({ name: '', permissions: '' });
+    if (roleData.name.trim() !== '') {
+      onSubmit({ ...roleData, id: role?.id || Date.now() }); // Include ID for editing or generate a new one
+      setRoleData({ name: '', permissions: '' });
       onClose();
     }
   };
@@ -35,7 +46,7 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions }) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-gray-100 text-black">
         <DialogHeader>
-          <DialogTitle>Add New Role</DialogTitle>
+          <DialogTitle>{role ? 'Edit Role' : 'Add New Role'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
@@ -46,9 +57,10 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions }) => {
               <Input
                 id="name"
                 name="name"
-                value={role.name}
+                value={roleData.name}
                 onChange={handleInputChange}
                 className="col-span-3"
+                required
               />
             </div>
 
@@ -60,10 +72,10 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions }) => {
                 <select
                   id="permissions"
                   name="permissions"
-                  value={role.permissions}
+                  value={roleData.permissions}
                   onChange={handlePermissionChange}
                   className="col-span-3 border rounded-md"
-                  required
+                  
                 >
                   <option value="">Select a permission</option>
                   {permissionOptions.map((permission) => (
@@ -76,7 +88,7 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions }) => {
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Add Role</Button>
+            <Button type="submit">{role ? 'Update Role' : 'Add Role'}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

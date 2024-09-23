@@ -1,13 +1,21 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const ModesModal = ({ isOpen, onClose, onSubmit }) => {
+const ModesModal = ({ isOpen, onClose, onSubmit, mode }) => {
   const [modeName, setModeName] = useState('');
+
+  useEffect(() => {
+    if (mode) {
+      setModeName(mode.name);
+    } else {
+      setModeName('');
+    }
+  }, [mode]);
 
   const handleInputChange = (e) => {
     setModeName(e.target.value);
@@ -15,7 +23,7 @@ const ModesModal = ({ isOpen, onClose, onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ name: modeName });
+    onSubmit({ name: modeName }); // Pass the new or updated mode
     setModeName('');
     onClose(); 
   };
@@ -24,7 +32,7 @@ const ModesModal = ({ isOpen, onClose, onSubmit }) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-gray-100">
         <DialogHeader>
-          <DialogTitle>Add New Mode</DialogTitle>
+          <DialogTitle>{mode ? 'Edit Mode' : 'Add New Mode'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
@@ -41,7 +49,7 @@ const ModesModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Add Mode</Button>
+            <Button type="submit">{mode ? 'Update Mode' : 'Add Mode'}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
