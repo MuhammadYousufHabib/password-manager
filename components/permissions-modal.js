@@ -35,7 +35,8 @@ const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions, permission 
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ ...newPermission, id: permission?.id || Date.now() }); // Include ID for editing or generate a new one
+    const permissionToSubmit = permission ? { ...newPermission, id: permission.id } : newPermission; // Include permission ID if editing
+    onSubmit(permissionToSubmit); 
     setNewPermission({ name: '', allowedApi: '' });
     onClose();
   };

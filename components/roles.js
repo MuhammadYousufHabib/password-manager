@@ -26,63 +26,35 @@ export function RolesJs({ roles: initialRoles }) {
     getPermissions();
   }, []);
 
-  const handleAddRole = async () => {
-    try {
-      const response = await fetchPermissions()
-        setPermissionOptions(response)
-      if (!response.ok) {
-        throw new Error('Failed to add role');
-      }
-
-      const newRole = await response.json(); // Assuming the API returns the created role
-      setRoles((prev) => [...prev, newRole]); // Add the new role to the existing roles
-      setModalOpen(false);
-    } catch (error) {
-      console.log("tryed")
-
-      console.error('Failed to add role:', error);
-    }
+  const handleAddRole = (newRole) => {
+    const newId = Date.now(); 
+    setRoles((prev) => [
+      ...prev,
+      { id: newId, ...newRole } 
+    ]);
+    setModalOpen(false);
   };
+
 
   const handleEditRole = (role) => {
     setEditingRole(role);
     setModalOpen(true);
   };
 
-  const handleUpdateRole = async (updatedRole) => {
-    try {
-      const response = await fetch(`/api/roles/${updatedRole.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedRole),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update role');
-      }
-      setRoles((prev) => prev.map(role => role.id === updatedRole.id ? updatedRole : role));
-      setModalOpen(false);
-      setEditingRole(null);
-    } catch (error) {
-      console.error('Failed to update role:', error);
-    }
+  const handleUpdateRole = (updatedRole) => {
+    setRoles((prev) => 
+      prev.map(role => 
+        role.id === updatedRole.id ? updatedRole : role
+      )
+    );
+    setModalOpen(false);
+    setEditingRole(null);
   };
 
-  const handleDeleteRole = async (id) => {
-    try {
-      const response = await fetch(`/api/roles/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete role');
-      }
-      setRoles((prev) => prev.filter(role => role.id !== id));
-    } catch (error) {
-      console.error('Failed to delete role:', error);
-    }
+  const handleDeleteRole = (id) => {
+    setRoles((prev) => 
+      prev.filter(role => role.id !== id)
+    );
   };
 
   return (

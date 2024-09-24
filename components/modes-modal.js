@@ -23,8 +23,14 @@ const ModesModal = ({ isOpen, onClose, onSubmit, mode }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ name: modeName }); // Pass the new or updated mode
-    setModeName('');
+
+    // Prevent submission if modeName is empty
+    if (!modeName.trim()) {
+      return; // You could also show an error message here
+    }
+
+    onSubmit({ name: modeName });
+    setModeName(''); // Reset the state after submission
     onClose(); 
   };
 
@@ -45,6 +51,7 @@ const ModesModal = ({ isOpen, onClose, onSubmit, mode }) => {
                 onChange={handleInputChange}
                 className="col-span-3"
                 required
+                aria-label="Mode Name"
               />
             </div>
           </div>

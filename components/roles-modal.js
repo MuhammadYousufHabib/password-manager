@@ -35,11 +35,11 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (roleData.name.trim() !== '') {
-      onSubmit({ ...roleData, id: role?.id || Date.now() }); // Include ID for editing or generate a new one
-      setRoleData({ name: '', permissions: '' });
-      onClose();
-    }
+    // Pass the role ID if editing, otherwise create a new role without an ID
+    const roleToSubmit = role ? { ...roleData, id: role.id } : { ...roleData }; 
+    onSubmit(roleToSubmit); 
+    setRoleData({ name: '', permissions: '' }); 
+    onClose();
   };
 
   return (

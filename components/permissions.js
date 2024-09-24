@@ -7,11 +7,11 @@ import { PlusIcon, Pencil, Trash2 } from "lucide-react";
 import { fetchPermissions } from '@/services/api/permissions'; 
 import AddPermissionModal from './permissions-modal';
 
-export function PermissionsJs({ permissions: initialPermissions }) {
+export function PermissionsJs({ permissions }) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [allowedApis, setAllowedApis] = useState([]); 
   const [editingPermission, setEditingPermission] = useState(null);
-  const [permissions, setPermissions] = useState(initialPermissions || []);
+  const [permissionsList, setPermissionsList] = useState(permissions);
 
   useEffect(() => {
     const loadAllowedApis = async () => {
@@ -28,7 +28,12 @@ export function PermissionsJs({ permissions: initialPermissions }) {
   }, []);
 
   const handleAddPermission = async (newPermission) => {
-    setPermissions((prev) => [...prev, newPermission]);
+    try {
+      const newId = Date.now();
+    setPermissionsList((prev) => [...prev, {id:newId ,...newPermission}]);
+    }
+    catch(error){      console.error('Failed to add permission:', error);
+    }
     setModalOpen(false);
   };
 
@@ -38,15 +43,15 @@ export function PermissionsJs({ permissions: initialPermissions }) {
   };
 
   const handleUpdatePermission = (updatedPermission) => {
-    setPermissions((prev) =>
+    setPermissionsList((prev) =>
       prev.map(permission => permission.id === updatedPermission.id ? updatedPermission : permission)
     );
     setModalOpen(false);
-    setEditingPermission(null);
+    setEditingPermission(null);   
   };
 
   const handleDeletePermission = (id) => {
-    setPermissions((prev) => prev.filter(permission => permission.id !== id));
+    setPermissionsList((prev) => prev.filter(permission => permission.id !== id));
   };
 
   return (
@@ -62,7 +67,7 @@ export function PermissionsJs({ permissions: initialPermissions }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {permissions.map((permission) => (
+            {permissionsList.map((permission) => (
               <TableRow key={permission.id}>
                 <TableCell>{permission.name}</TableCell>
                 <TableCell>{permission.allowed_api}</TableCell>

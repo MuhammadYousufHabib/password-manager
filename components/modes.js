@@ -12,8 +12,11 @@ export function ModesJs({ modes: initialModes }) {
   const [editingMode, setEditingMode] = useState(null);
 
   const handleAddMode = (newMode) => {
-    setModes((prevModes) => [...prevModes, newMode]); 
+    
+    setModes((prevModes) => [...prevModes, { id: Date.now(), ...newMode }]);
+    console.log(newMode,"asdas")
     setIsModalOpen(false); 
+
   };
 
   const handleEditMode = (mode) => {
@@ -23,14 +26,14 @@ export function ModesJs({ modes: initialModes }) {
 
   const handleUpdateMode = (updatedMode) => {
     setModes((prevModes) => 
-      prevModes.map(mode => mode.name === editingMode.name ? updatedMode : mode)
+      prevModes.map((mode) => (mode.id === editingMode.id ? updatedMode : mode))
     );
     setIsModalOpen(false);
     setEditingMode(null);
   };
 
-  const handleDeleteMode = (modeName) => {
-    setModes((prevModes) => prevModes.filter(mode => mode.name !== modeName));
+  const handleDeleteMode = (modeId) => {
+    setModes((prevModes) => prevModes.filter((mode) => mode.id !== modeId));
   };
 
   return (
@@ -45,16 +48,16 @@ export function ModesJs({ modes: initialModes }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {modes.map((mode, index) => (
-              <TableRow key={index}>
-                <TableCell>{mode.name}</TableCell> 
+            {modes.map((mode) => (
+              <TableRow key={mode.id}>
+                <TableCell>{mode.name}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
                     <Button onClick={() => handleEditMode(mode)} size="sm" variant="outline">
                       <Pencil className="h-4 w-4 mr-1" />
                       Edit
                     </Button>
-                    <Button onClick={() => handleDeleteMode(mode.name)} size="sm" variant="outline" className="text-red-500 hover:text-red-700">
+                    <Button onClick={() => handleDeleteMode(mode.id)} size="sm" variant="outline" className="text-red-500 hover:text-red-700">
                       <Trash2 className="h-4 w-4 mr-1" />
                       Delete
                     </Button>

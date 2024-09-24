@@ -1,26 +1,28 @@
-'use client'
+// AddUserModal.js
+'use client';
 
-import React, { useState,useEffect } from 'react'
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import React, { useState, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions,user }) => {
+const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user }) => {
   const [newUser, setNewUser] = useState({
     name: '',
     username: '',
     email: '',
     password: '',
     role: '' 
-  })
-  useEffect(() => {
+  });
+
+  useEffect(() => { // for persisting data for edit
     if (user) {
       setNewUser({
         name: user.name,
         username: user.username,
         email: user.email,
-        password: '', 
+        password: '', // Reset password field for security
         role: user.role || ''
       });
     } else {
@@ -33,29 +35,30 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions,user }) => {
       });
     }
   }, [user]);
+
   const handleInputChange = (e) => {
-    const { name, value } = e.target
-    setNewUser(prev => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setNewUser(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleRoleChange = (e) => {
     const selectedRole = e.target.value;
-    setNewUser(prev => ({ ...prev, role: selectedRole  }));
-  }
- 
+    setNewUser(prev => ({ ...prev, role: selectedRole }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ ...newUser, id: user?.id }); // Include ID for editing
-
-    setNewUser({ name: '', username: '', email: '', password: '', role: '' });
-    onClose(); 
-  }
+    // Pass the user ID if editing, otherwise pass the new user without an ID
+    const userToSubmit = user ? { ...newUser, id: user.id } : newUser; 
+    onSubmit(userToSubmit); 
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-gray-100 text-black">
         <DialogHeader>
-          <DialogTitle>Add New User</DialogTitle>
+          <DialogTitle>{user ? 'Edit User' : 'Add New User'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
@@ -102,7 +105,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions,user }) => {
                 value={newUser.password}
                 onChange={handleInputChange}
                 className="col-span-3"
-                required
+                required={!user} // Make required only if adding a new user
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -114,9 +117,8 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions,user }) => {
                   value={newUser.role}
                   onChange={handleRoleChange}
                   className="col-span-3 border rounded-md"
-                  
                 >
-                  <option value="">Select a role</option>
+                  <option value="">Select a role (optional)</option>
                   {roleOptions.map((role) => (
                     <option key={role.id} value={role.id}>
                       {role.name}
@@ -127,12 +129,12 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions,user }) => {
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Add User</Button>
+            <Button type="submit">{user ? 'Update User' : 'Add User'}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
 export default AddUserModal;

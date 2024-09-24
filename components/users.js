@@ -7,7 +7,7 @@ import AddUserModal from './add-user-modal'
 import { fetchRoles } from '@/services/api/roles'  
 
 export default function UsersPage({ users }) {
-  const [usersList, setUsersList] = useState(users || []); 
+  const [usersList, setUsersList] = useState(users); 
   const [isModalOpen, setModalOpen] = useState(false);
   const [roleOptions, setRoleOptions] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
@@ -26,17 +26,19 @@ export default function UsersPage({ users }) {
   }, []);
 
   const handleAddUser = async (newUser) => {
-    try {
-      console.log('New user to add:', newUser);
+    try {//POST
+      console.log("this is newuser to be addded",newUser)
+      const newId = Date.now(); // Generate a unique ID
       setUsersList((prevUsers) => [
         ...prevUsers,
-        { id: Date.now(), ...newUser } // Temporary ID for frontend
+        { id: newId, ...newUser } // Use newId as the ID
       ]);
     } catch (error) {
       console.error('Failed to add user:', error);
     }
     setModalOpen(false);
   };
+  
   const handleDeleteUser = (id) => {
     setUsersList((prevUsers) => prevUsers.filter(user => user.id !== id));
   };
@@ -68,7 +70,7 @@ export default function UsersPage({ users }) {
           </TableHeader>
           <TableBody>
             {usersList.map((user) => (
-              <TableRow key={user.id}>
+              <TableRow key={user.id}> 
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
