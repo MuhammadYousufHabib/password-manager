@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PlusIcon, Pencil, Trash2 } from "lucide-react"
 import AddUserModal from './add-user-modal'  
 import { fetchRoles } from '@/services/api/roles'  
-
+import { createUser,deleteUser,updateUser } from '@/services/api/users'
 export default function UsersPage({ users }) {
   const [usersList, setUsersList] = useState(users); 
   const [isModalOpen, setModalOpen] = useState(false);
@@ -26,12 +26,11 @@ export default function UsersPage({ users }) {
   }, []);
 
   const handleAddUser = async (newUser) => {
-    try {//POST
-      console.log("this is newuser to be addded",newUser)
-      const newId = Date.now(); // Generate a unique ID
+    try {//post
+      const addedUser = await createUser(newUser);
       setUsersList((prevUsers) => [
         ...prevUsers,
-        { id: newId, ...newUser } // Use newId as the ID
+        addedUser 
       ]);
     } catch (error) {
       console.error('Failed to add user:', error);
@@ -39,20 +38,36 @@ export default function UsersPage({ users }) {
     setModalOpen(false);
   };
   
-  const handleDeleteUser = (id) => {
-    setUsersList((prevUsers) => prevUsers.filter(user => user.id !== id));
+  const handleDeleteUser = async (id) => {
+    try {
+      await deleteUser(id);
+      
+      setUsersList((usersList) => usersList.filter(user => user.id !== id));
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+    }
   };
   const handleEditUser = (user) => {
+
     setEditingUser(user);
     setModalOpen(true); 
   };
 
   const handleUpdateUser = async (updatedUser) => {
-    setUsersList((prevUsers) => prevUsers.map(user => 
-      user.id === updatedUser.id ? updatedUser : user
-    ));
-    setModalOpen(false);
-    setEditingUser(null);
+    try {
+      const updatedUserFromApi = await updateUser(updatedUser.id, updatedUser);
+      
+      setUsersList((prevUsers) =>
+        prevUsers.map(user => 
+          user.id === updatedUser.id ? updatedUserFromApi : user
+        )
+      );
+  
+      setModalOpen(false);
+      setEditingUser(null);
+    } catch (error) {
+      console.error('Failed to update user:', error);
+    }
   };
 
   return (

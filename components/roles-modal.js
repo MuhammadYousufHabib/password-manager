@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -9,17 +10,17 @@ import { Label } from "@/components/ui/label";
 const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role }) => {
   const [roleData, setRoleData] = useState({
     name: '',
-    permissions: ''
+    permissions: []
   });
 
   useEffect(() => {
     if (role) {
       setRoleData({
         name: role.name,
-        permissions: role.permissions,
+        permissions: role.permissions || [],
       });
     } else {
-      setRoleData({ name: '', permissions: '' });
+      setRoleData({ name: '', permissions: [] });
     }
   }, [role]);
 
@@ -28,17 +29,16 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role }) => {
     setRoleData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handlePermissionChange = (e) => {
-    const selectedPermission = e.target.value;
-    setRoleData(prev => ({ ...prev, permissions: selectedPermission }));
+  const handlePermissionChange = (selectedOptions) => {
+    const selectedPermissions = selectedOptions ? selectedOptions.map(option => option.value) : [];
+    setRoleData(prev => ({ ...prev, permissions: selectedPermissions }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Pass the role ID if editing, otherwise create a new role without an ID
     const roleToSubmit = role ? { ...roleData, id: role.id } : { ...roleData }; 
     onSubmit(roleToSubmit); 
-    setRoleData({ name: '', permissions: '' }); 
+    setRoleData({ name: '', permissions: [] }); 
     onClose();
   };
 
@@ -69,21 +69,13 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role }) => {
                 Assign Permissions
               </Label>
               <div className="col-span-3">
-                <select
-                  id="permissions"
-                  name="permissions"
-                  value={roleData.permissions}
+                <Select
+                  isMulti
+                  options={permissionOptions.map(permission => ({ label: permission.name, value: permission.id }))}
+                  value={permissionOptions.filter(permission => roleData.permissions.includes(permission.id)).map(permission => ({ label: permission.name, value: permission.id }))}
                   onChange={handlePermissionChange}
-                  className="col-span-3 border rounded-md"
-                  
-                >
-                  <option value="">Select a permission</option>
-                  {permissionOptions.map((permission) => (
-                    <option key={permission.id} value={permission.id}>
-                      {permission.name}
-                    </option>
-                  ))}
-                </select>
+                  className="col-span-3"
+                />
               </div>
             </div>
           </div>

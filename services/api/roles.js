@@ -1,6 +1,6 @@
 import { del, get, patch, post } from './apiUtils';
 
-export const fetchRoles = async () => await get("role");
+export const fetchRoles = async () => await get("role/");
 
 export const fetchRoleById = async (roleId) => await get(`role/${roleId}`);
 

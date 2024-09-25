@@ -5,18 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusIcon, Pencil, Trash2 } from "lucide-react";
 import ModesModal from './modes-modal'; 
+import { createMode, updateMode, deleteMode } from '@/services/api/modes';  
 
 export function ModesJs({ modes: initialModes }) {
   const [modes, setModes] = useState(initialModes || []); 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMode, setEditingMode] = useState(null);
 
-  const handleAddMode = (newMode) => {
-    
-    setModes((prevModes) => [...prevModes, { id: Date.now(), ...newMode }]);
-    console.log(newMode,"asdas")
-    setIsModalOpen(false); 
-
+  const handleAddMode = async (newMode) => {
+    try {
+      const createdMode = await createMode(newMode); 
+      setModes((prevModes) => [...prevModes, createdMode]);  API
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Failed to add mode:', error);
+    }
   };
 
   const handleEditMode = (mode) => {
@@ -24,16 +27,26 @@ export function ModesJs({ modes: initialModes }) {
     setIsModalOpen(true);
   };
 
-  const handleUpdateMode = (updatedMode) => {
-    setModes((prevModes) => 
-      prevModes.map((mode) => (mode.id === editingMode.id ? updatedMode : mode))
-    );
-    setIsModalOpen(false);
-    setEditingMode(null);
+  const handleUpdateMode = async (updatedMode) => {
+    try {
+      const updated = await updateMode(editingMode.id, updatedMode); 
+      setModes((prevModes) =>
+        prevModes.map((mode) => (mode.id === editingMode.id ? updated : mode))
+      );
+      setIsModalOpen(false);
+      setEditingMode(null);
+    } catch (error) {
+      console.error('Failed to update mode:', error);
+    }
   };
 
-  const handleDeleteMode = (modeId) => {
-    setModes((prevModes) => prevModes.filter((mode) => mode.id !== modeId));
+  const handleDeleteMode = async (modeId) => {
+    try {
+      await deleteMode(modeId);  
+      setModes((prevModes) => prevModes.filter((mode) => mode.id !== modeId)); 
+    } catch (error) {
+      console.error('Failed to delete mode:', error);
+    }
   };
 
   return (
@@ -69,7 +82,7 @@ export function ModesJs({ modes: initialModes }) {
         </Table>
       </div>
       <Button className="mt-4" onClick={() => {
-        setEditingMode(null); // Clear editing state for adding
+        setEditingMode(null); 
         setIsModalOpen(true);
       }}>
         <PlusIcon className="h-4 w-4 mr-1" />

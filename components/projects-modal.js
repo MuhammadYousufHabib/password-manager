@@ -54,7 +54,7 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project }) => {
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              required
+              
             />
           </div>
           <DialogFooter>

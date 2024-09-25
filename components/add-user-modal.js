@@ -1,4 +1,3 @@
-// AddUserModal.js
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -6,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Select from 'react-select';
 
 const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user }) => {
   const [newUser, setNewUser] = useState({
@@ -13,17 +13,17 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user }) => {
     username: '',
     email: '',
     password: '',
-    role: '' 
+    roles: []
   });
 
-  useEffect(() => { // for persisting data for edit
+  useEffect(() => {
     if (user) {
       setNewUser({
         name: user.name,
         username: user.username,
         email: user.email,
-        password: '', // Reset password field for security
-        role: user.role || ''
+        password: '',
+        roles: user.roles || []
       });
     } else {
       setNewUser({
@@ -31,7 +31,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user }) => {
         username: '',
         email: '',
         password: '',
-        role: ''
+        roles: []
       });
     }
   }, [user]);
@@ -41,18 +41,22 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user }) => {
     setNewUser(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleRoleChange = (e) => {
-    const selectedRole = e.target.value;
-    setNewUser(prev => ({ ...prev, role: selectedRole }));
+  const handleRoleChange = (selectedOptions) => {
+    const selectedRoles = selectedOptions ? selectedOptions.map(option => option.value) : [];
+    setNewUser(prev => ({ ...prev, roles: selectedRoles }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Pass the user ID if editing, otherwise pass the new user without an ID
     const userToSubmit = user ? { ...newUser, id: user.id } : newUser; 
     onSubmit(userToSubmit); 
     onClose();
   };
+
+  const formattedRoleOptions = roleOptions.map(role => ({
+    value: role.id,
+    label: role.name
+  }));
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -105,26 +109,21 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user }) => {
                 value={newUser.password}
                 onChange={handleInputChange}
                 className="col-span-3"
-                required={!user} // Make required only if adding a new user
+                required={!user}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="role" className="text-right">Role</Label>
+              <Label htmlFor="roles" className="text-right">Roles</Label>
               <div className="col-span-3">
-                <select
-                  id="role"
-                  name="role"
-                  value={newUser.role}
+                <Select
+                  id="roles"
+                  name="roles"
+                  value={formattedRoleOptions.filter(option => newUser.roles.includes(option.value))}
                   onChange={handleRoleChange}
-                  className="col-span-3 border rounded-md"
-                >
-                  <option value="">Select a role (optional)</option>
-                  {roleOptions.map((role) => (
-                    <option key={role.id} value={role.id}>
-                      {role.name}
-                    </option>
-                  ))}
-                </select>
+                  options={formattedRoleOptions}
+                  isMulti
+                  className="col-span-3"
+                />
               </div>
             </div>
           </div>

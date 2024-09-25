@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusIcon, Pencil, Trash2 } from "lucide-react";
 import RolesModal from './roles-modal';  
 import { fetchPermissions } from '@/services/api/permissions';  
+import { createRole,deleteRole,updateRole } from '@/services/api/roles';
 
 export function RolesJs({ roles: initialRoles }) {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -26,37 +28,49 @@ export function RolesJs({ roles: initialRoles }) {
     getPermissions();
   }, []);
 
-  const handleAddRole = (newRole) => {
-    const newId = Date.now(); 
-    setRoles((prev) => [
-      ...prev,
-      { id: newId, ...newRole } 
-    ]);
-    setModalOpen(false);
+  const handleAddRole = async (newRole) => {
+    try {
+      const addedRole = await createRole(newRole); // Call API to create role
+
+      setRoles((prev) => [
+        ...prev,
+        addedRole // Add role returned from the API
+      ]);
+    } catch (error) {
+      console.error('Failed to add role:', error);
+    } finally {
+      setModalOpen(false);
+    }
   };
 
+  const handleUpdateRole = async (updatedRole) => {
+    try {
+      const role = await updateRole(updatedRole.id, updatedRole); // Call API to update role
+      setRoles((prev) => 
+        prev.map((r) => r.id === role.id ? role : r) // Update role in the local state
+      );
+    } catch (error) {
+      console.error('Failed to update role:', error);
+    } finally {
+      setModalOpen(false);
+      setEditingRole(null);
+    }
+  };
 
+  const handleDeleteRole = async (id) => {
+    try {
+      await deleteRole(id); 
+      setRoles((prev) => prev.filter((role) => role.id !== id)); // Remove role from the state
+    } catch (error) {
+      console.error('Failed to delete role:', error);
+    }
+  };
   const handleEditRole = (role) => {
-    setEditingRole(role);
-    setModalOpen(true);
+    setEditingRole(role); 
+    setModalOpen(true);   
   };
 
-  const handleUpdateRole = (updatedRole) => {
-    setRoles((prev) => 
-      prev.map(role => 
-        role.id === updatedRole.id ? updatedRole : role
-      )
-    );
-    setModalOpen(false);
-    setEditingRole(null);
-  };
-
-  const handleDeleteRole = (id) => {
-    setRoles((prev) => 
-      prev.filter(role => role.id !== id)
-    );
-  };
-
+ 
   return (
     <div className="container mx-auto ">
       <h1 className="text-2xl font-bold mb-5">Roles</h1>
@@ -90,7 +104,7 @@ export function RolesJs({ roles: initialRoles }) {
         </Table>
       </div>
       <Button className="mt-4" onClick={() => {
-        setEditingRole(null); // Clear editing state for adding
+        setEditingRole(null); 
         setModalOpen(true);
       }}>
         <PlusIcon className="h-4 w-4 mr-1" />
@@ -101,7 +115,7 @@ export function RolesJs({ roles: initialRoles }) {
         onClose={() => setModalOpen(false)}
         onSubmit={editingRole ? handleUpdateRole : handleAddRole}
         permissionOptions={permissionOptions}  
-        role={editingRole} // Pass the role being edited
+        role={editingRole} 
       />
     </div>
   );

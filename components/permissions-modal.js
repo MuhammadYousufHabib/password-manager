@@ -61,23 +61,8 @@ const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions, permission 
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="allowedApi" className="text-right">Allowed API</Label>
               <div className="col-span-3">
-                <select
-                  id="allowedApi"
-                  name="allowedApi"
-                  value={newPermission.allowedApi}
-                  onChange={handleApiChange}
-                  className="border rounded-md"
-                  
-                >
-                  <option value="">Select an API</option>
-                  {apiOptions.map((api, index) => (
-                    <option key={index} value={api}>
-                      {api}
-                    </option>
-                  ))}
-                </select>
+           
               </div>
             </div>
           </div>

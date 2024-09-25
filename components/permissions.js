@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusIcon, Pencil, Trash2 } from "lucide-react";
-import { fetchPermissions } from '@/services/api/permissions'; 
 import AddPermissionModal from './permissions-modal';
+import { fetchPermissions, createPermission, updatePermission, deletePermission } from '@/services/api/permissions'; 
+
 
 export function PermissionsJs({ permissions }) {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -13,47 +14,45 @@ export function PermissionsJs({ permissions }) {
   const [editingPermission, setEditingPermission] = useState(null);
   const [permissionsList, setPermissionsList] = useState(permissions);
 
-  useEffect(() => {
-    const loadAllowedApis = async () => {
-      try {
-        const permissionsData = await fetchPermissions(); 
-        const apis = permissionsData.map(permission => permission.allowed_api); 
-        setAllowedApis(apis); 
-      } catch (error) {
-        console.error('Failed to fetch allowed APIs:', error);
-      }
-    };
 
-    loadAllowedApis();
-  }, []);
 
   const handleAddPermission = async (newPermission) => {
     try {
-      const newId = Date.now();
-    setPermissionsList((prev) => [...prev, {id:newId ,...newPermission}]);
-    }
-    catch(error){      console.error('Failed to add permission:', error);
+      const createdPermission = await createPermission(newPermission); // Call API to create new permission
+      setPermissionsList((prev) => [...prev, createdPermission]); // Add the newly created permission to the state
+    } catch (error) {
+      console.error('Failed to add permission:', error);
     }
     setModalOpen(false);
   };
 
-  const handleEditPermission = (permission) => {
-    setEditingPermission(permission);
-    setModalOpen(true);
-  };
-
-  const handleUpdatePermission = (updatedPermission) => {
-    setPermissionsList((prev) =>
-      prev.map(permission => permission.id === updatedPermission.id ? updatedPermission : permission)
-    );
+  const handleUpdatePermission = async (updatedPermission) => {
+    try {
+      await updatePermission(updatedPermission.id, updatedPermission); // Call API to update permission
+      setPermissionsList((prev) => 
+        prev.map((permission) => 
+          permission.id === updatedPermission.id ? updatedPermission : permission
+        )
+      ); // Update the permission in the state
+    } catch (error) {
+      console.error('Failed to update permission:', error);
+    }
     setModalOpen(false);
     setEditingPermission(null);   
   };
 
-  const handleDeletePermission = (id) => {
-    setPermissionsList((prev) => prev.filter(permission => permission.id !== id));
+  const handleDeletePermission = async (id) => {
+    try {
+      await deletePermission(id); 
+      setPermissionsList((prev) => prev.filter((permission) => permission.id !== id)); 
+    } catch (error) {
+      console.error('Failed to delete permission:', error);
+    }
   };
-
+  const handleEditPermission = (permission) => {
+    setEditingPermission(permission); 
+    setModalOpen(true); 
+  };
   return (
     <div className="container mx-auto">
       <h1 className="text-2xl font-bold mb-5">Permissions</h1>
@@ -62,7 +61,7 @@ export function PermissionsJs({ permissions }) {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>Allowed API</TableHead>
+              {/* <TableHead>Allowed API</TableHead> */}
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -70,7 +69,7 @@ export function PermissionsJs({ permissions }) {
             {permissionsList.map((permission) => (
               <TableRow key={permission.id}>
                 <TableCell>{permission.name}</TableCell>
-                <TableCell>{permission.allowed_api}</TableCell>
+                {/* <TableCell>{permission.allowed_api}</TableCell> */}
                 <TableCell>
                   <div className="flex space-x-2">
                     <Button onClick={() => handleEditPermission(permission)} size="sm" variant="outline">
@@ -89,7 +88,7 @@ export function PermissionsJs({ permissions }) {
         </Table>
       </div>
       <Button className="mt-4" onClick={() => {
-        setEditingPermission(null); // Clear editing state for adding
+        setEditingPermission(null); 
         setModalOpen(true);
       }}>
         <PlusIcon className="h-4 w-4 mr-1" />
