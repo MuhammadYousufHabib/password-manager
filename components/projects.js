@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PlusIcon, Pencil, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import ProjectsModal from './projects-modal'; 
 import { ProjectDetails } from './project_details';
+import { createProject, deleteProject, updateProject } from '@/services/api/projects';
 
 export function ProjectsJs({ projects }) {
   const [isEditing, setIsEditing] = useState(null); // Track which index is being edited
@@ -18,34 +19,66 @@ export function ProjectsJs({ projects }) {
   const [editingProject, setEditingProject] = useState(null);
   const [expandedProjectId, setExpandedProjectId] = useState(null); 
 
-  const handleAddProject = (newProject) => {
-    const newId = Date.now();
-    setProjectList((prevProjects) => [
-      ...prevProjects,
-      { id: newId, ...newProject }
-    ]);
-    setIsModalOpen(false);
+  // const handleAddProject = (newProject) => {
+  //   const newId = Date.now();
+  //   setProjectList((prevProjects) => [
+  //     ...prevProjects,
+  //     { id: newId, ...newProject }
+  //   ]);
+  //   setIsModalOpen(false);
+  // };
+  const handleAddProject = async (newProject) => {
+    try {
+      const createdProject = await createProject(newProject); // Use the API to create the project
+      setProjectList((prevProjects) => [
+        ...prevProjects,
+        createdProject // API should return the new project with its ID
+      ]);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Failed to add project:", error);
+    }
   };
-
   const handleEditProject = (project) => {
     setEditingProject(project);
     setIsModalOpen(true);
   };
 
-  const handleUpdateProject = (updatedProject) => {
-    setProjectList((prevProjects) => 
-      prevProjects.map((project) => 
-        project.id === updatedProject.id ? updatedProject : project
-      )
-    );
-    setIsModalOpen(false);
-    setEditingProject(null);
+  // const handleUpdateProject = (updatedProject) => {
+  //   setProjectList((prevProjects) => 
+  //     prevProjects.map((project) => 
+  //       project.id === updatedProject.id ? updatedProject : project
+  //     )
+  //   );
+  //   setIsModalOpen(false);
+  //   setEditingProject(null);
+  // };
+  const handleUpdateProject = async (updatedProject) => {
+    try {
+      const response = await updateProject(updatedProject.id, updatedProject); // Call the update API
+      setProjectList((prevProjects) => 
+        prevProjects.map((project) => 
+          project.id === updatedProject.id ? response : project // Update the list with the updated project
+        )
+      );
+      setIsModalOpen(false);
+      setEditingProject(null);
+    } catch (error) {
+      console.error("Failed to update project:", error);
+    }
   };
 
-  const handleDeleteProject = (id) => {
-    setProjectList((prevProjects) => prevProjects.filter(project => project.id !== id));
+  // const handleDeleteProject = (id) => {
+  //   setProjectList((prevProjects) => prevProjects.filter(project => project.id !== id));
+  // };
+  const handleDeleteProject = async (id) => {
+    try {
+      await deleteProject(id); // Call the delete API
+      setProjectList((prevProjects) => prevProjects.filter(project => project.id !== id));
+    } catch (error) {
+      console.error("Failed to delete project:", error);
+    }
   };
-
   const toggleExpandProject = (id) => {
     setExpandedProjectId(expandedProjectId === id ? null : id);
   };
@@ -94,7 +127,6 @@ export function ProjectsJs({ projects }) {
                 {expandedProjectId === project.id && (
                   <TableRow>
                     <TableCell colSpan={4} className="bg-gray-50 p-4">
-                      <div className="border rounded-lg p-4">
                         <ProjectDetails
                           project={project}
                           projectDetails={projectDetails}
@@ -108,7 +140,6 @@ export function ProjectsJs({ projects }) {
                           isEditing={isEditing}
                           setIsEditing={setIsEditing}
                         />
-                      </div>
                     </TableCell>
                   </TableRow>
                 )}

@@ -3,7 +3,6 @@ const BASE_URL = "http://localhost:8000";
 let buildHeaders;
 
 if (typeof window === "undefined") {
-  //check if its a server component or a client component
   const { cookies } = require("next/headers");
 
   buildHeaders = () => {

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Select from "react-select";
-import { XIcon } from "lucide-react"; // Cross icon for removing mode
 
 const modeOptions = [
   { value: "mode1", label: "Mode 1" },
@@ -21,10 +20,15 @@ export function ProjectDetails({
   isEditing,
   setIsEditing,
 }) {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
   const handleKeyChange = (e, index) => {
     const updatedDetails = [...projectDetails];
     updatedDetails[index].key = e.target.value;
     setProjectDetails(updatedDetails);
+  };
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
   };
 
   const handleValueChange = (e, index) => {
@@ -65,14 +69,8 @@ export function ProjectDetails({
     setProjectDetails(updatedDetails);
   };
 
-  const handleRemoveMode = (index) => {
-    const updatedDetails = [...projectDetails];
-    updatedDetails[index].mode = null; // Remove the mode
-    setProjectDetails(updatedDetails);
-  };
-
   return (
-    <div className="absolute left-0 w-full bg-white border border-gray-200 shadow-lg z-10 p-4 rounded overflow-hidden">
+    <div className="absolute left-0 w-full bg-white border border-gray-200 shadow-lg z-10 p-4 rounded overflow-hidden h-screen">
       <h3 className="font-semibold">Project Details:</h3>
       <h2 className="font-semibold">Fields:</h2>
 
@@ -91,15 +89,22 @@ export function ProjectDetails({
           placeholder="Enter new value"
           onChange={(e) => setNewValue(e.target.value)}
         />
-        <div className="w-1/4 relative">
+        <div className="w-1/4">
           <Select
             value={newMode}
             onChange={setNewMode}
             options={modeOptions}
-            placeholder="Select Mode "
-            isClearable 
-            className="text-xs z-40"
-            styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+            placeholder="Select Mode"
+            isClearable
+            className="text-xs"
+            styles={{
+              menu: (base) => ({
+                ...base,
+                zIndex: 9999,
+                maxHeight: "150px",
+                overflowY: "auto",
+              }),
+            }}
           />
         </div>
         <Button variant="outline" size="sm" onClick={handleAdd}>
@@ -118,14 +123,22 @@ export function ProjectDetails({
               disabled={isEditing !== index}
             />
             <input
-              type="text"
-              value={detail.value}
+        type={isPasswordVisible ? "text" : "password"}
+        value={detail.value}
               className="border rounded px-2 py-1 w-1/4"
               onChange={(e) => handleValueChange(e, index)}
               disabled={isEditing !== index}
-            />
+              
+            /> <button
+            type="button"
+            onClick={togglePasswordVisibility}
+            className="text-sm text-blue-500"
+          >
+            {isPasswordVisible ? "Hide" : "Show"}
+          </button>
+           
 
-            <div className="w-1/4 flex items-center">
+            <div className="w-1/4">
               <Select
                 value={detail.mode}
                 onChange={(selectedMode) => handleModeChange(selectedMode, index)}
@@ -133,16 +146,6 @@ export function ProjectDetails({
                 isDisabled={isEditing !== index}
                 placeholder="Mode (Optional)"
               />
-              {detail.mode && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemoveMode(index)}
-                  className="ml-2"
-                >
-                  <XIcon className="h-4 w-4" />
-                </Button>
-              )}
             </div>
 
             {isEditing === index ? (

@@ -5,8 +5,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PlusIcon, Pencil, Trash2 } from "lucide-react"
 import AddUserModal from './add-user-modal'  
 import { fetchRoles } from '@/services/api/roles'  
-import { createUser,deleteUser,updateUser } from '@/services/api/users'
+import { createUser,deleteUser,fetchUsers,updateUser } from '@/services/api/users'
+import { assign_role } from '@/services/api/assign'
 export default function UsersPage({ users }) {
+  const [userExists, setuserExists] = useState(false)
+  const [roleids, setroleids] = useState([])
   const [usersList, setUsersList] = useState(users); 
   const [isModalOpen, setModalOpen] = useState(false);
   const [roleOptions, setRoleOptions] = useState([]);
@@ -21,28 +24,42 @@ export default function UsersPage({ users }) {
         console.error('Failed to fetch roles:', error);
       }
     };
-
     loadRoles();
   }, []);
-
   const handleAddUser = async (newUser) => {
-    try {//post
+    try {
+      // for(let i=0;i<usersList.length;i++){
+      //   if (usersList[i].username===newUser.username){
+      //     console.log("user already exist")
+      //      setuserExists(true)
+      //   }else{
+      //     setuserExists(false)
+      //   }
+      // }
       const addedUser = await createUser(newUser);
       setUsersList((prevUsers) => [
         ...prevUsers,
         addedUser 
       ]);
+      console.log(addedUser.id, "addedUser.id >>>>>>>>>>>>>");
+  
+      for (let i = 0; i < roleids.length; i++) {
+       await assign_role({ user_id: Number(addedUser.id), role_id: Number(roleids[i]) })
+      }
+
     } catch (error) {
       console.error('Failed to add user:', error);
     }
-    setModalOpen(false);
+   
+  //  userExists ? setModalOpen(false) : setModalOpen(true);
+  setModalOpen(true)
   };
-  
   const handleDeleteUser = async (id) => {
     try {
       await deleteUser(id);
-      
-      setUsersList((usersList) => usersList.filter(user => user.id !== id));
+      // const newlist =await fetchUsers() //added
+      setUsersList((usersList) => usersList.filter(user => Number(user.id) !== id));
+      // setUsersList(newlist) //added
     } catch (error) {
       console.error('Failed to delete user:', error);
     }
@@ -119,6 +136,8 @@ export default function UsersPage({ users }) {
         onSubmit={editingUser ? handleUpdateUser : handleAddUser}
         roleOptions={roleOptions}
         user={editingUser} 
+        roleids={roleids}
+        setroleids={setroleids}
       />
     </div>
   );

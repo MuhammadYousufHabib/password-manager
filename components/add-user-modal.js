@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Select from 'react-select';
 
-const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user }) => {
+const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user,roleids,setroleids }) => {
   const [newUser, setNewUser] = useState({
     name: '',
     username: '',
@@ -25,7 +25,9 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user }) => {
         password: '',
         roles: user.roles || []
       });
-    } else {
+    } 
+    
+    else {
       setNewUser({
         name: '',
         username: '',
@@ -44,7 +46,10 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user }) => {
   const handleRoleChange = (selectedOptions) => {
     const selectedRoles = selectedOptions ? selectedOptions.map(option => option.value) : [];
     setNewUser(prev => ({ ...prev, roles: selectedRoles }));
+    setroleids(selectedRoles)
+
   };
+  console.log(roleids,"=>>>>>>>>>>>>>>>>>")
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -93,7 +98,6 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user }) => {
               <Input
                 id="email"
                 name="email"
-                type="email"
                 value={newUser.email}
                 onChange={handleInputChange}
                 className="col-span-3"
