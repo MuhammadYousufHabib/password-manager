@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Select from 'react-select';
 
-const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user }) => {
+const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) => { // Added 'theme' prop
   const [newUser, setNewUser] = useState({
     name: '',
     username: '',
@@ -60,7 +60,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-100 text-black">
+      <DialogContent className={`text-black ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-black'}`}>
         <DialogHeader>
           <DialogTitle>{user ? 'Edit User' : 'Add New User'}</DialogTitle>
         </DialogHeader>
@@ -123,6 +123,16 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user }) => {
                   options={formattedRoleOptions}
                   isMulti
                   className="col-span-3"
+                  theme={(selectTheme) => ({
+                    ...selectTheme,
+                    colors: {
+                      ...selectTheme.colors,
+                      neutral0: theme === 'dark' ? '#2d3748' : '#fff', // Background color
+                      neutral80: theme === 'dark' ? '#fff' : '#1a202c', // Text color
+                      primary25: theme === 'dark' ? '#4a5568' : '#edf2f7', // Option hover color
+                      primary: theme === 'dark' ? '#38b2ac' : '#3182ce', // Option selected color
+                    },
+                  })}
                 />
               </div>
             </div>

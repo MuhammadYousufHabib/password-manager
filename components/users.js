@@ -1,13 +1,15 @@
-"use client"
-import React, { useState, useEffect } from 'react'
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { PlusIcon, Pencil, Trash2 } from "lucide-react"
-import AddUserModal from './add-user-modal'  
-import { fetchRoles } from '@/services/api/roles'  
-import { createUser,deleteUser,updateUser } from '@/services/api/users'
-export default function UsersPage({ users }) {
-  const [usersList, setUsersList] = useState(users); 
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { PlusIcon, Pencil, Trash2 } from "lucide-react";
+import AddUserModal from './add-user-modal';
+import { fetchRoles } from '@/services/api/roles';
+import { createUser, deleteUser, updateUser } from '@/services/api/users';
+
+export default function UsersPage({ users, theme }) { // Added 'theme' prop
+  const [usersList, setUsersList] = useState(users);
   const [isModalOpen, setModalOpen] = useState(false);
   const [roleOptions, setRoleOptions] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
@@ -26,7 +28,7 @@ export default function UsersPage({ users }) {
   }, []);
 
   const handleAddUser = async (newUser) => {
-    try {//post
+    try {
       const addedUser = await createUser(newUser);
       setUsersList((prevUsers) => [
         ...prevUsers,
@@ -37,32 +39,29 @@ export default function UsersPage({ users }) {
     }
     setModalOpen(false);
   };
-  
+
   const handleDeleteUser = async (id) => {
     try {
       await deleteUser(id);
-      
       setUsersList((usersList) => usersList.filter(user => user.id !== id));
     } catch (error) {
       console.error('Failed to delete user:', error);
     }
   };
-  const handleEditUser = (user) => {
 
+  const handleEditUser = (user) => {
     setEditingUser(user);
-    setModalOpen(true); 
+    setModalOpen(true);
   };
 
   const handleUpdateUser = async (updatedUser) => {
     try {
       const updatedUserFromApi = await updateUser(updatedUser.id, updatedUser);
-      
       setUsersList((prevUsers) =>
-        prevUsers.map(user => 
+        prevUsers.map(user =>
           user.id === updatedUser.id ? updatedUserFromApi : user
         )
       );
-  
       setModalOpen(false);
       setEditingUser(null);
     } catch (error) {
@@ -71,9 +70,9 @@ export default function UsersPage({ users }) {
   };
 
   return (
-    <div className="container mx-auto">
+    <div className={`container mx-auto `}>
       <h1 className="text-2xl font-bold mb-5">Users</h1>
-      <div className="border rounded-lg overflow-hidden">
+      <div className={`border rounded-lg overflow-hidden ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -85,17 +84,17 @@ export default function UsersPage({ users }) {
           </TableHeader>
           <TableBody>
             {usersList.map((user) => (
-              <TableRow key={user.id}> 
+              <TableRow key={user.id} className={`${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
-                    <Button onClick={() => handleEditUser(user)} size="sm" variant="outline">
+                    <Button onClick={() => handleEditUser(user)} size="sm" variant="outline" className={`${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       <Pencil className="h-4 w-4 mr-1" />
                       Edit
                     </Button>
-                    <Button onClick={() => handleDeleteUser(user.id)} size="sm" variant="outline" className="text-red-500 hover:text-red-700">
+                    <Button onClick={() => handleDeleteUser(user.id)} size="sm" variant="outline" className={`text-red-500 hover:text-red-700`}>
                       <Trash2 className="h-4 w-4 mr-1" />
                       Delete
                     </Button>
@@ -118,7 +117,8 @@ export default function UsersPage({ users }) {
         }}
         onSubmit={editingUser ? handleUpdateUser : handleAddUser}
         roleOptions={roleOptions}
-        user={editingUser} 
+        user={editingUser}
+        theme={theme} // Pass down the theme prop to the modal
       />
     </div>
   );

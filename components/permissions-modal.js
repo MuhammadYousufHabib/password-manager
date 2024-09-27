@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions, permission }) => {
+const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions, permission, theme }) => {
   const [newPermission, setNewPermission] = useState({
     name: '',
     allowedApi: '' 
@@ -43,7 +43,7 @@ const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions, permission 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-100 text-black">
+      <DialogContent className={`bg-gray-100 text-black  dark:bg-gray-800 dark:text-white `}>
         <DialogHeader>
           <DialogTitle>{permission ? 'Edit Permission' : 'Add New Permission'}</DialogTitle>
         </DialogHeader>
@@ -62,7 +62,20 @@ const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions, permission 
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <div className="col-span-3">
-           
+                <Label htmlFor="allowedApi" className="text-right">Allowed API</Label>
+                <select
+                  id="allowedApi"
+                  name="allowedApi"
+                  value={newPermission.allowedApi}
+                  onChange={handleApiChange}
+                  className="col-span-3 mt-1"
+                  required
+                >
+                  <option value="">Select API</option>
+                  {apiOptions.map((api) => (
+                    <option key={api.id} value={api.name}>{api.name}</option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>

@@ -7,9 +7,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PlusIcon, Pencil, Trash2 } from "lucide-react";
 import RolesModal from './roles-modal';  
 import { fetchPermissions } from '@/services/api/permissions';  
-import { createRole,deleteRole,updateRole } from '@/services/api/roles';
+import { createRole, deleteRole, updateRole } from '@/services/api/roles';
 
-export function RolesJs({ roles: initialRoles }) {
+export function RolesJs({ roles: initialRoles, theme }) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [permissionOptions, setPermissionOptions] = useState([]);
   const [editingRole, setEditingRole] = useState(null);
@@ -65,16 +65,16 @@ export function RolesJs({ roles: initialRoles }) {
       console.error('Failed to delete role:', error);
     }
   };
+
   const handleEditRole = (role) => {
     setEditingRole(role); 
     setModalOpen(true);   
   };
 
- 
   return (
-    <div className="container mx-auto ">
+    <div className={`container mx-auto`}>
       <h1 className="text-2xl font-bold mb-5">Roles</h1>
-      <div className="border rounded-lg overflow-hidden">
+      <div className={`border rounded-lg overflow-hidden ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -116,6 +116,7 @@ export function RolesJs({ roles: initialRoles }) {
         onSubmit={editingRole ? handleUpdateRole : handleAddRole}
         permissionOptions={permissionOptions}  
         role={editingRole} 
+        theme={theme}  // Pass the theme prop to RolesModal
       />
     </div>
   );

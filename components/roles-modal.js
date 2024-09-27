@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role }) => {
+const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role, theme }) => {
   const [roleData, setRoleData] = useState({
     name: '',
     permissions: []
@@ -44,7 +44,7 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-100 text-black">
+      <DialogContent className={`bg-gray-100 text-black dark:bg-gray-800 dark:text-white`}>
         <DialogHeader>
           <DialogTitle>{role ? 'Edit Role' : 'Add New Role'}</DialogTitle>
         </DialogHeader>

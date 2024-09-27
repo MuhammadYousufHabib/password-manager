@@ -1,9 +1,14 @@
-import { ProjectsJs } from '@/components/projects'
-import React from 'react'
-import { fetchProjects } from '@/services/api/projects'
+import React from 'react';
+import { ProjectsJs } from '@/components/projects';
+import { fetchProjects } from '@/services/api/projects';
 
-export default async function page(){
-  const projects=await fetchProjects()
-  return(<><ProjectsJs projects={projects}/></>)
+export default async function Page() {
+  // Uncomment the line below to fetch projects when you're ready to implement the API call.
+  // const projects = await fetchProjects();
+
+  return (
+    <div className="bg-background text-foreground min-h-screen">
+      <ProjectsJs projects={[]} />
+    </div>
+  );
 }
-

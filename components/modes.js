@@ -7,7 +7,7 @@ import { PlusIcon, Pencil, Trash2 } from "lucide-react";
 import ModesModal from './modes-modal'; 
 import { createMode, updateMode, deleteMode } from '@/services/api/modes';  
 
-export function ModesJs({ modes: initialModes }) {
+export function ModesJs({ modes: initialModes, theme }) {  // Accept theme as a prop
   const [modes, setModes] = useState(initialModes || []); 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMode, setEditingMode] = useState(null);
@@ -15,7 +15,7 @@ export function ModesJs({ modes: initialModes }) {
   const handleAddMode = async (newMode) => {
     try {
       const createdMode = await createMode(newMode); 
-      setModes((prevModes) => [...prevModes, createdMode]);  API
+      setModes((prevModes) => [...prevModes, createdMode]);  
       setIsModalOpen(false);
     } catch (error) {
       console.error('Failed to add mode:', error);
@@ -52,7 +52,7 @@ export function ModesJs({ modes: initialModes }) {
   return (
     <div className="container mx-auto">
       <h1 className="text-2xl font-bold mb-5">Modes</h1>
-      <div className="border rounded-lg overflow-hidden">
+      <div className={`border rounded-lg overflow-hidden ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -92,7 +92,8 @@ export function ModesJs({ modes: initialModes }) {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         onSubmit={editingMode ? handleUpdateMode : handleAddMode} 
-        mode={editingMode} 
+        mode={editingMode}
+        theme={theme}  // Pass theme to ModesModal
       />
     </div>
   );

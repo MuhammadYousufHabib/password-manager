@@ -1,20 +1,17 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusIcon, Pencil, Trash2 } from "lucide-react";
 import AddPermissionModal from './permissions-modal';
 import { fetchPermissions, createPermission, updatePermission, deletePermission } from '@/services/api/permissions'; 
 
-
-export function PermissionsJs({ permissions }) {
+export function PermissionsJs({ permissions, theme }) {
   const [isModalOpen, setModalOpen] = useState(false);
   const [allowedApis, setAllowedApis] = useState([]); 
   const [editingPermission, setEditingPermission] = useState(null);
   const [permissionsList, setPermissionsList] = useState(permissions);
-
-
 
   const handleAddPermission = async (newPermission) => {
     try {
@@ -49,19 +46,20 @@ export function PermissionsJs({ permissions }) {
       console.error('Failed to delete permission:', error);
     }
   };
+
   const handleEditPermission = (permission) => {
     setEditingPermission(permission); 
     setModalOpen(true); 
   };
+
   return (
-    <div className="container mx-auto">
+    <div className={`container mx-auto`}>
       <h1 className="text-2xl font-bold mb-5">Permissions</h1>
-      <div className="border rounded-lg overflow-hidden">
+      <div className={`border rounded-lg overflow-hidden ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}>
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              {/* <TableHead>Allowed API</TableHead> */}
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -69,7 +67,6 @@ export function PermissionsJs({ permissions }) {
             {permissionsList.map((permission) => (
               <TableRow key={permission.id}>
                 <TableCell>{permission.name}</TableCell>
-                {/* <TableCell>{permission.allowed_api}</TableCell> */}
                 <TableCell>
                   <div className="flex space-x-2">
                     <Button onClick={() => handleEditPermission(permission)} size="sm" variant="outline">
@@ -100,6 +97,7 @@ export function PermissionsJs({ permissions }) {
         onSubmit={editingPermission ? handleUpdatePermission : handleAddPermission}
         apiOptions={allowedApis}
         permission={editingPermission} // Pass the permission being edited
+        theme={theme} // Pass the theme prop to AddPermissionModal if needed
       />
     </div>
   );

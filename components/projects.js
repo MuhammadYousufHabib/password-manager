@@ -56,7 +56,7 @@ export function ProjectsJs({ projects }) {
       <div className="border rounded-lg overflow-hidden relative">
         <Table className="min-w-full table-auto">
           <TableHeader>
-            <TableRow className="bg-gray-100">
+            <TableRow className="">
               <TableHead className="p-4 text-left">Name</TableHead>
               <TableHead className="p-4 text-left">Description</TableHead>
               <TableHead className="p-4 text-left">Actions</TableHead>
@@ -93,8 +93,8 @@ export function ProjectsJs({ projects }) {
                 </TableRow>
                 {expandedProjectId === project.id && (
                   <TableRow>
-                    <TableCell colSpan={4} className="bg-gray-50 p-4">
-                      <div className="border rounded-lg p-4">
+                    <TableCell colSpan={4} className="bg-gray-50 p-4  dark:bg-gray-800 dark:text-white">
+                      <div className="border rounded-lg p-4  dark:bg-gray-800 dark:text-white">
                         <ProjectDetails
                           project={project}
                           projectDetails={projectDetails}

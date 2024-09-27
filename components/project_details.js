@@ -20,6 +20,7 @@ export function ProjectDetails({
   setNewMode,
   isEditing,
   setIsEditing,
+  theme, // Add theme prop
 }) {
   const handleKeyChange = (e, index) => {
     const updatedDetails = [...projectDetails];
@@ -72,34 +73,33 @@ export function ProjectDetails({
   };
 
   return (
-    <div className="absolute left-0 w-full bg-white border border-gray-200 shadow-lg z-10 p-4 rounded overflow-hidden">
+    <div className={`absolute left-0 w-full h-[230px] bg-white border border-gray-200 shadow-lg z-10 p-4 rounded overflow-hidden  dark:bg-gray-800 dark:text-white`}>
       <h3 className="font-semibold">Project Details:</h3>
       <h2 className="font-semibold">Fields:</h2>
 
-      <div className="flex space-x-4 mb-2">
+      <div className="flex space-x-4 mb-2 ">
         <input
           type="text"
           value={newKey}
-          className="border rounded px-2 py-1 w-1/4"
+          className={`border rounded px-2 py-1 w-1/4 ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
           placeholder="Enter new key"
           onChange={(e) => setNewKey(e.target.value)}
         />
         <input
           type="text"
           value={newValue}
-          className="border rounded px-2 py-1 w-1/4"
+          className={`border rounded px-2 py-1 w-1/4 h-1/4 ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
           placeholder="Enter new value"
           onChange={(e) => setNewValue(e.target.value)}
         />
-        <div className="w-1/4 relative">
+        <div className="w-1/4 relative ">
           <Select
             value={newMode}
             onChange={setNewMode}
+            placeholder="Select Mode"
             options={modeOptions}
-            placeholder="Select Mode "
             isClearable 
-            className="text-xs z-40"
-            styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+            className="text-xs z-40  dark:bg-gray-800 dark:text-white"
           />
         </div>
         <Button variant="outline" size="sm" onClick={handleAdd}>
@@ -113,14 +113,14 @@ export function ProjectDetails({
             <input
               type="text"
               value={detail.key}
-              className="border rounded px-2 py-1 w-1/4"
+              className={`border rounded px-2 py-1 w-1/4 ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
               onChange={(e) => handleKeyChange(e, index)}
               disabled={isEditing !== index}
             />
             <input
               type="text"
               value={detail.value}
-              className="border rounded px-2 py-1 w-1/4"
+              className={`border rounded px-2 py-1 w-1/4 ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
               onChange={(e) => handleValueChange(e, index)}
               disabled={isEditing !== index}
             />

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-const ProjectsModal = ({ isOpen, onClose, onSubmit, project }) => {
+const ProjectsModal = ({ isOpen, onClose, onSubmit, project, theme }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
@@ -33,7 +33,7 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-100">
+      <DialogContent className={`bg-gray-100 dark:bg-gray-800 dark:text-white`}>
         <DialogHeader>
           <DialogTitle>{project ? 'Edit Project' : 'Add Project'}</DialogTitle>
         </DialogHeader>
@@ -46,6 +46,7 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project }) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
             />
           </div>
           <div className="mb-4">
@@ -54,7 +55,7 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project }) => {
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              
+              className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
             />
           </div>
           <DialogFooter>
