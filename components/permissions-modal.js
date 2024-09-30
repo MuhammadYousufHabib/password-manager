@@ -89,3 +89,4 @@ const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions, permission,
 };
 
 export default AddPermissionModal;
+ 

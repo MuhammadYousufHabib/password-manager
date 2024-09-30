@@ -72,7 +72,7 @@ export default function UsersPage({ users, theme }) { // Added 'theme' prop
   return (
     <div className={`container mx-auto `}>
       <h1 className="text-2xl font-bold mb-5">Users</h1>
-      <div className={`border rounded-lg overflow-hidden ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}>
+      <div className={`border rounded-lg overflow-hidden`}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -82,15 +82,15 @@ export default function UsersPage({ users, theme }) { // Added 'theme' prop
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody >
             {usersList.map((user) => (
-              <TableRow key={user.id} className={`${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}>
+              <TableRow key={user.id} >
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
-                    <Button onClick={() => handleEditUser(user)} size="sm" variant="outline" className={`${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <Button onClick={() => handleEditUser(user)} size="sm" variant="outline" className={`dark:text-white-500 hover:text-white-700`}>
                       <Pencil className="h-4 w-4 mr-1" />
                       Edit
                     </Button>

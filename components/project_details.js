@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Select from "react-select";
-import { XIcon } from "lucide-react"; // Cross icon for removing mode
+import { XIcon } from "lucide-react"; 
+
+// Cross icon for removing mode
 
 const modeOptions = [
   { value: "mode1", label: "Mode 1" },
+  { value: "mode2", label: "Mode 2" }, { value: "mode1", label: "Mode 1" },
+  { value: "mode2", label: "Mode 2" }, { value: "mode1", label: "Mode 1" },
+  { value: "mode2", label: "Mode 2" }, { value: "mode1", label: "Mode 1" },
   { value: "mode2", label: "Mode 2" },
   { value: "mode3", label: "Mode 3" },
 ];
@@ -73,38 +78,53 @@ export function ProjectDetails({
   };
 
   return (
-    <div className={`absolute left-0 w-full h-[230px] bg-white border border-gray-200 shadow-lg z-10 p-4 rounded overflow-hidden  dark:bg-gray-800 dark:text-white`}>
+    <div className={`absolute left-0 w-full h-auto bg-white border border-gray-200 shadow-lg z-10 p-4 rounded overflow-hidden dark:bg-gray-800 dark:text-white`}>
       <h3 className="font-semibold">Project Details:</h3>
       <h2 className="font-semibold">Fields:</h2>
 
-      <div className="flex space-x-4 mb-2 ">
+      <div className= {` flex space-x-4 mb-2 `}>
         <input
           type="text"
           value={newKey}
-          className={`border rounded px-2 py-1 w-1/4 ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
+          className={`border rounded px-2 py-1 w-1/4 h-[40px] dark:border-gray-200 dark:bg-gray-800 dark:text-white`}
           placeholder="Enter new key"
           onChange={(e) => setNewKey(e.target.value)}
         />
         <input
           type="text"
           value={newValue}
-          className={`border rounded px-2 py-1 w-1/4 h-1/4 ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
+          className={`border rounded px-2 py-1 w-1/4 h-[40px] dark:border-gray-200 dark:bg-gray-800 dark:text-white`}
           placeholder="Enter new value"
           onChange={(e) => setNewValue(e.target.value)}
         />
-        <div className="w-1/4 relative ">
-          <Select
-            value={newMode}
-            onChange={setNewMode}
-            placeholder="Select Mode"
-            options={modeOptions}
-            isClearable 
-            className="text-xs z-40  dark:bg-gray-800 dark:text-white"
-          />
+        <div className="dropdown-height dark:bg-gray-800 dark:text-white ">
+        <Select
+          value={newMode}
+          onChange={setNewMode}
+          placeholder="Select Mode"
+          options={modeOptions}
+          isClearable
+          menuPortalTarget={document.body}
+          styles={{
+            menuPortal: base => ({ ...base, zIndex: 9999 }),
+            option: (provided) => ({
+              ...provided,
+              color: 'black',  // Set the option text color to black
+            }),
+          }}
+          className="text-xs z-40"
+        />
+
         </div>
-        <Button variant="outline" size="sm" onClick={handleAdd}>
+        <Button
+          className="bg-blue-500 text-white h-[40px] px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          variant="outline"
+          size="sm"
+          onClick={handleAdd}
+        >
           Add
         </Button>
+
       </div>
 
       <ul className="mt-2 space-y-1">
@@ -113,26 +133,35 @@ export function ProjectDetails({
             <input
               type="text"
               value={detail.key}
-              className={`border rounded px-2 py-1 w-1/4 ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
+              className={`border rounded px-2 py-1 w-1/4 h-[40px] dark:border-gray-200 dark:bg-gray-800 dark:text-white`}
               onChange={(e) => handleKeyChange(e, index)}
               disabled={isEditing !== index}
             />
             <input
               type="text"
               value={detail.value}
-              className={`border rounded px-2 py-1 w-1/4 ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-black'}`}
+              className={`border rounded px-2 py-1 w-1/4 h-[40px] dark:border-gray-200 dark:bg-gray-800 dark:text-white`}
               onChange={(e) => handleValueChange(e, index)}
               disabled={isEditing !== index}
             />
 
             <div className="w-1/4 flex items-center">
-              <Select
-                value={detail.mode}
-                onChange={(selectedMode) => handleModeChange(selectedMode, index)}
-                options={modeOptions}
-                isDisabled={isEditing !== index}
-                placeholder="Mode (Optional)"
-              />
+            <Select
+              value={detail.mode}
+              onChange={(selectedMode) => handleModeChange(selectedMode, index)}
+              options={modeOptions}
+              isDisabled={isEditing !== index}
+              placeholder="Mode (Optional)"
+              menuPortalTarget={document.body}
+              styles={{
+                menuPortal: base => ({ ...base, zIndex: 9999 }),
+                option: (provided) => ({
+                  ...provided,
+                  color: 'black',  // Set the option text color to black
+                }),
+              }}
+            />
+
               {detail.mode && (
                 <Button
                   variant="ghost"

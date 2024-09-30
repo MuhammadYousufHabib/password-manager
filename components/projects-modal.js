@@ -13,6 +13,7 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project, theme }) => {
 
   useEffect(() => {
     if (project) {
+      
       setName(project.name);
       setDescription(project.description);
     } else {

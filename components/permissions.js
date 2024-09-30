@@ -55,7 +55,7 @@ export function PermissionsJs({ permissions, theme }) {
   return (
     <div className={`container mx-auto`}>
       <h1 className="text-2xl font-bold mb-5">Permissions</h1>
-      <div className={`border rounded-lg overflow-hidden ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}>
+      <div className={`border rounded-lg overflow-hidden `}>
         <Table>
           <TableHeader>
             <TableRow>

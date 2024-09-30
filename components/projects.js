@@ -51,9 +51,9 @@ export function ProjectsJs({ projects }) {
   };
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto ">
       <h1 className="text-2xl font-bold mb-5">Projects</h1>
-      <div className="border rounded-lg overflow-hidden relative">
+      <div className="border rounded-lg overflow-hidden relative ">
         <Table className="min-w-full table-auto">
           <TableHeader>
             <TableRow className="">
@@ -123,7 +123,10 @@ export function ProjectsJs({ projects }) {
       </Button>
       <ProjectsModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingProject(null);
+        }}
         onSubmit={editingProject ? handleUpdateProject : handleAddProject} 
         project={editingProject} 
       />

@@ -15,6 +15,8 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
     password: '',
     roles: []
   });
+  
+  
 
   useEffect(() => {
     if (user) {
@@ -60,35 +62,35 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`text-black ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-black'}`}>
+      <DialogContent className={`text-black bg-gray-100 dark:bg-gray-800 dark:text-white`}>
         <DialogHeader>
           <DialogTitle>{user ? 'Edit User' : 'Add New User'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="">
               <Label htmlFor="name" className="text-right">Name</Label>
               <Input
                 id="name"
                 name="name"
                 value={newUser.name}
                 onChange={handleInputChange}
-                className="col-span-3"
+                className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
                 required
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="">
               <Label htmlFor="username" className="text-right">Username</Label>
               <Input
                 id="username"
                 name="username"
                 value={newUser.username}
                 onChange={handleInputChange}
-                className="col-span-3"
+                className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
                 required
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="">
               <Label htmlFor="email" className="text-right">Email</Label>
               <Input
                 id="email"
@@ -96,11 +98,11 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
                 type="email"
                 value={newUser.email}
                 onChange={handleInputChange}
-                className="col-span-3"
+                className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
                 required
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="">
               <Label htmlFor="password" className="text-right">Password</Label>
               <Input
                 id="password"
@@ -108,11 +110,11 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
                 type="password"
                 value={newUser.password}
                 onChange={handleInputChange}
-                className="col-span-3"
+                className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
                 required={!user}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="">
               <Label htmlFor="roles" className="text-right">Roles</Label>
               <div className="col-span-3">
                 <Select
@@ -122,7 +124,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
                   onChange={handleRoleChange}
                   options={formattedRoleOptions}
                   isMulti
-                  className="col-span-3"
+                  className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
                   theme={(selectTheme) => ({
                     ...selectTheme,
                     colors: {

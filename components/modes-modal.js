@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 
 const ModesModal = ({ isOpen, onClose, onSubmit, mode, theme }) => { // Accept the theme prop
   const [modeName, setModeName] = useState('');
-
+ 
   useEffect(() => {
     if (mode) {
       setModeName(mode.name);
@@ -36,7 +36,7 @@ const ModesModal = ({ isOpen, onClose, onSubmit, mode, theme }) => { // Accept t
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-black'}`}>
+      <DialogContent className={`text-black bg-gray-100 dark:bg-gray-800 dark:text-white`}>
         <DialogHeader>
           <DialogTitle>{mode ? 'Edit Mode' : 'Add New Mode'}</DialogTitle>
         </DialogHeader>

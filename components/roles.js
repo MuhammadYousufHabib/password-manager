@@ -40,6 +40,7 @@ export function RolesJs({ roles: initialRoles, theme }) {
       console.error('Failed to add role:', error);
     } finally {
       setModalOpen(false);
+      setEditingRole(null);
     }
   };
 
@@ -74,7 +75,7 @@ export function RolesJs({ roles: initialRoles, theme }) {
   return (
     <div className={`container mx-auto`}>
       <h1 className="text-2xl font-bold mb-5">Roles</h1>
-      <div className={`border rounded-lg overflow-hidden ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}>
+      <div className={`border rounded-lg overflow-hidden `}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -88,7 +89,7 @@ export function RolesJs({ roles: initialRoles, theme }) {
                 <TableCell>{role.name}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
-                    <Button onClick={() => handleEditRole(role)} size="sm" variant="outline">
+                    <Button onClick={() => handleEditRole(role)} size="sm" variant="outline" className={`daek:text-white-500 hover:text-white-700`}>
                       <Pencil className="h-4 w-4 mr-1" />
                       Edit
                     </Button>
@@ -112,7 +113,11 @@ export function RolesJs({ roles: initialRoles, theme }) {
       </Button>
       <RolesModal
         isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={() => {
+          setModalOpen(false);
+          setEditingRole(null);
+
+        }}
         onSubmit={editingRole ? handleUpdateRole : handleAddRole}
         permissionOptions={permissionOptions}  
         role={editingRole} 

@@ -31,6 +31,10 @@ body {
     text-wrap: balance;
   }
 }
+.dropdown-height {
+  height: 70px !important;
+}
+
 
 /* Tailwind CSS color variables and configurations */
 @layer base {
