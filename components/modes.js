@@ -15,7 +15,7 @@ export function ModesJs({ modes: initialModes }) {
   const handleAddMode = async (newMode) => {
     try {
       const createdMode = await createMode(newMode); 
-      setModes((prevModes) => [...prevModes, createdMode]);  API
+      setModes((prevModes) => [...prevModes, createdMode]);  
       setIsModalOpen(false);
     } catch (error) {
       console.error('Failed to add mode:', error);

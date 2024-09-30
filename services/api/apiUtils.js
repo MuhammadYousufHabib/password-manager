@@ -93,6 +93,9 @@ export const del = async (endpoint) => {
       error.status = response.status;
       throw error;
     }
+    if (response.status === 204) {
+      return null; 
+    }
     return response.json();
   } catch (error) {
     console.error("API call error:", error);

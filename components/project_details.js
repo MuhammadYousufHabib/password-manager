@@ -1,12 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Select from "react-select";
-
-const modeOptions = [
-  { value: "mode1", label: "Mode 1" },
-  { value: "mode2", label: "Mode 2" },
-  { value: "mode3", label: "Mode 3" },
-];
+import { fetchModes } from "@/services/api/modes";
+import { createField, deleteField, updateKey } from "@/services/api/fields";
 
 export function ProjectDetails({
   projectDetails,
@@ -19,14 +15,30 @@ export function ProjectDetails({
   setNewMode,
   isEditing,
   setIsEditing,
+  expandedProjectId,
 }) {
+  const [modeOptions, setModeOptions] = useState([]);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const fetchModeList = async () => {
+    const modes = await fetchModes();
+    const formattedModes = modes.map(mode => ({
+      label: mode.name,
+      value: mode.id
+    }));
+    setModeOptions(formattedModes);
+  };
+
+  useEffect(() => {
+    fetchModeList();
+  }, []);
 
   const handleKeyChange = (e, index) => {
     const updatedDetails = [...projectDetails];
     updatedDetails[index].key = e.target.value;
     setProjectDetails(updatedDetails);
   };
+
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
@@ -43,16 +55,32 @@ export function ProjectDetails({
     setProjectDetails(updatedDetails);
   };
 
-  const handleAdd = () => {
-    if (newKey && newValue) { // Allow mode to be optional
-      const updatedDetails = [
-        ...projectDetails,
-        { key: newKey, value: newValue, mode: newMode || null },
-      ];
-      setProjectDetails(updatedDetails);
-      setNewKey("");
-      setNewValue("");
-      setNewMode(null); // Clear the mode selection after adding
+  const handleAdd = async () => {
+    if (newKey && newValue) {
+      const newField = {
+        project_id: Number(expandedProjectId),
+        key: newKey,
+        value: newValue,
+        mode_id: newMode ? newMode.value : null,
+      };
+      try {
+        const createdField = await createField(newField);
+        const updatedDetails = [
+          ...projectDetails,
+          {
+            key: newKey,
+            value: newValue,
+            mode: newMode || null,
+            field_id: createdField.field_id, // Capture the field_id
+          },
+        ];
+        setProjectDetails(updatedDetails);
+        setNewKey("");
+        setNewValue("");
+        setNewMode(null);
+      } catch (error) {
+        console.error("Error adding field:", error);
+      }
     }
   };
 
@@ -60,13 +88,28 @@ export function ProjectDetails({
     setIsEditing(index);
   };
 
-  const handleUpdate = () => {
-    setIsEditing(null);
+  const handleUpdate = async (index) => {
+    const updatedDetails = [...projectDetails];
+    const fieldToUpdate = updatedDetails[index];
+    try {
+      // Update the key in the backend
+      await updateKey(fieldToUpdate.field_id, { key: fieldToUpdate.key });
+
+      setIsEditing(null); // Reset editing state
+    } catch (error) {
+      console.error("Error updating field:", error);
+    }
   };
 
-  const handleDelete = (index) => {
-    const updatedDetails = projectDetails.filter((_, i) => i !== index);
-    setProjectDetails(updatedDetails);
+  const handleDelete = async (index) => {
+    const fieldToDelete = projectDetails[index];
+    try {
+      await deleteField(fieldToDelete.field_id); // Call deleteField API
+      const updatedDetails = projectDetails.filter((_, i) => i !== index);
+      setProjectDetails(updatedDetails);
+    } catch (error) {
+      console.error("Error deleting field:", error);
+    }
   };
 
   return (
@@ -123,20 +166,19 @@ export function ProjectDetails({
               disabled={isEditing !== index}
             />
             <input
-        type={isPasswordVisible ? "text" : "password"}
-        value={detail.value}
+              type={isPasswordVisible ? "text" : "password"}
+              value={detail.value}
               className="border rounded px-2 py-1 w-1/4"
               onChange={(e) => handleValueChange(e, index)}
               disabled={isEditing !== index}
-              
-            /> <button
-            type="button"
-            onClick={togglePasswordVisibility}
-            className="text-sm text-blue-500"
-          >
-            {isPasswordVisible ? "Hide" : "Show"}
-          </button>
-           
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="text-sm text-blue-500"
+            >
+              {isPasswordVisible ? "Hide" : "Show"}
+            </button>
 
             <div className="w-1/4">
               <Select

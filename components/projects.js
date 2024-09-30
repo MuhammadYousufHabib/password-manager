@@ -1,40 +1,59 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusIcon, Pencil, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import ProjectsModal from './projects-modal'; 
 import { ProjectDetails } from './project_details';
 import { createProject, deleteProject, updateProject } from '@/services/api/projects';
+import { fetchUsers } from '@/services/api/users';
+import { assign_project } from '@/services/api/assign';
 
 export function ProjectsJs({ projects }) {
-  const [isEditing, setIsEditing] = useState(null); // Track which index is being edited
-  const [newKey, setNewKey] = useState(''); // State for new key input
+  const [assignedUsers, setAssignedUsers] = useState([]); 
+  const [isEditing, setIsEditing] = useState(null); 
+  const [newKey, setNewKey] = useState(''); 
   const [newValue, setNewValue] = useState(''); 
-  const [newMode, setNewMode] = useState(null); // New mode state added
+  const [newMode, setNewMode] = useState(null); 
   const [projectDetails, setProjectDetails] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projectList, setProjectList] = useState(projects); 
   const [editingProject, setEditingProject] = useState(null);
   const [expandedProjectId, setExpandedProjectId] = useState(null); 
+  const [users, setUsers] = useState([]); 
 
-  // const handleAddProject = (newProject) => {
-  //   const newId = Date.now();
-  //   setProjectList((prevProjects) => [
-  //     ...prevProjects,
-  //     { id: newId, ...newProject }
-  //   ]);
-  //   setIsModalOpen(false);
-  // };
-  const handleAddProject = async (newProject) => {
+
+
+
+ async function loadUsers ()
+{
     try {
-      const createdProject = await createProject(newProject); // Use the API to create the project
+      const allUsers = await fetchUsers();
+      setUsers(allUsers);
+    } catch (error) {
+      console.error('Failed to fetch Users:', error);
+    }
+}
+  
+  const handleAddProject = async (newProject) => {
+    for(let i=0;i<projectList.length;i++){
+      if(projectList[i].name===newProject.name){
+         alert("Project already Exists!")
+         return
+      }
+    }
+    try {
+
+      const createdProject = await createProject(newProject); 
       setProjectList((prevProjects) => [
         ...prevProjects,
-        createdProject // API should return the new project with its ID
+        createdProject 
       ]);
-      setIsModalOpen(false);
+      for(let i=0;i<assignedUsers.length;i++)
+{      
+  await assign_project({ user_id: Number(assignedUsers[i]), project_id: Number(createdProject.id) })
+}      setIsModalOpen(false);
     } catch (error) {
       console.error("Failed to add project:", error);
     }
@@ -44,23 +63,18 @@ export function ProjectsJs({ projects }) {
     setIsModalOpen(true);
   };
 
-  // const handleUpdateProject = (updatedProject) => {
-  //   setProjectList((prevProjects) => 
-  //     prevProjects.map((project) => 
-  //       project.id === updatedProject.id ? updatedProject : project
-  //     )
-  //   );
-  //   setIsModalOpen(false);
-  //   setEditingProject(null);
-  // };
   const handleUpdateProject = async (updatedProject) => {
     try {
-      const response = await updateProject(updatedProject.id, updatedProject); // Call the update API
+      const response = await updateProject(updatedProject.id, updatedProject); 
       setProjectList((prevProjects) => 
         prevProjects.map((project) => 
-          project.id === updatedProject.id ? response : project // Update the list with the updated project
+          project.id === updatedProject.id ? response : project 
         )
       );
+      for(let i=0;i<assignedUsers.length;i++)
+        {      
+          await assign_project({ user_id: Number(assignedUsers[i]), project_id: Number(updatedProject.id) })
+        } 
       setIsModalOpen(false);
       setEditingProject(null);
     } catch (error) {
@@ -68,12 +82,9 @@ export function ProjectsJs({ projects }) {
     }
   };
 
-  // const handleDeleteProject = (id) => {
-  //   setProjectList((prevProjects) => prevProjects.filter(project => project.id !== id));
-  // };
   const handleDeleteProject = async (id) => {
     try {
-      await deleteProject(id); // Call the delete API
+      await deleteProject(id); 
       setProjectList((prevProjects) => prevProjects.filter(project => project.id !== id));
     } catch (error) {
       console.error("Failed to delete project:", error);
@@ -82,7 +93,10 @@ export function ProjectsJs({ projects }) {
   const toggleExpandProject = (id) => {
     setExpandedProjectId(expandedProjectId === id ? null : id);
   };
-
+  const usersList = async () => {
+    const usersData = await fetchUsers();
+    setUsers(usersData);
+  };
   return (
     <div className="container mx-auto">
       <h1 className="text-2xl font-bold mb-5">Projects</h1>
@@ -135,10 +149,12 @@ export function ProjectsJs({ projects }) {
                           setNewKey={setNewKey}
                           newValue={newValue}
                           setNewValue={setNewValue}
-                          newMode={newMode} // Pass down newMode
-                          setNewMode={setNewMode} // Pass down setNewMode
+                          newMode={newMode} 
+                          setNewMode={setNewMode} 
                           isEditing={isEditing}
                           setIsEditing={setIsEditing}
+                          expandedProjectId={expandedProjectId}
+
                         />
                     </TableCell>
                   </TableRow>
@@ -157,7 +173,12 @@ export function ProjectsJs({ projects }) {
         onClose={() => setIsModalOpen(false)} 
         onSubmit={editingProject ? handleUpdateProject : handleAddProject} 
         project={editingProject} 
-      />
+        loadUsers={loadUsers}
+        users={users}
+        assignedUsers={assignedUsers}
+        setassignedUsers={setAssignedUsers}
+
+/>
     </div>
   );
 }

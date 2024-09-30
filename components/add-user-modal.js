@@ -1,13 +1,18 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Select from 'react-select';
 
-const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user,roleids,setroleids }) => {
+const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user,roleids,setroleids,loadRoles }) => {
+  
+useEffect(() => {
+  loadRoles()
+}, [])
+
   const [newUser, setNewUser] = useState({
     name: '',
     username: '',
@@ -37,7 +42,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user,roleids,set
       });
     }
   }, [user]);
-
+ 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewUser(prev => ({ ...prev, [name]: value }));
@@ -49,12 +54,18 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user,roleids,set
     setroleids(selectedRoles)
 
   };
-  console.log(roleids,"=>>>>>>>>>>>>>>>>>")
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const userToSubmit = user ? { ...newUser, id: user.id } : newUser; 
-    onSubmit(userToSubmit); 
+    onSubmit(userToSubmit)
+setNewUser(    {
+      name: '',
+      username: '',
+      email: '',
+      password: '',
+      roles: []
+    })
     onClose();
   };
 
@@ -113,7 +124,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user,roleids,set
                 value={newUser.password}
                 onChange={handleInputChange}
                 className="col-span-3"
-                required={!user}
+                required
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">

@@ -1,15 +1,15 @@
 'use client';
-
 import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusIcon, Pencil, Trash2 } from "lucide-react";
 import RolesModal from './roles-modal';  
 import { fetchPermissions } from '@/services/api/permissions';  
 import { createRole,deleteRole,updateRole } from '@/services/api/roles';
+import { assign_permission } from '@/services/api/assign';
 
 export function RolesJs({ roles: initialRoles }) {
+  const [Permissionids, setPermissionids] = useState([])
   const [isModalOpen, setModalOpen] = useState(false);
   const [permissionOptions, setPermissionOptions] = useState([]);
   const [editingRole, setEditingRole] = useState(null);
@@ -29,13 +29,22 @@ export function RolesJs({ roles: initialRoles }) {
   }, []);
 
   const handleAddRole = async (newRole) => {
+        for(let i=0;i<roles.length;i++){
+          if(roles[i].name===newRole.name){
+             alert("Role already Exists!")
+             return
+          }
+        }
     try {
-      const addedRole = await createRole(newRole); // Call API to create role
+      const addedRole = await createRole(newRole);
 
       setRoles((prev) => [
         ...prev,
-        addedRole // Add role returned from the API
+        addedRole 
       ]);
+      if(Permissionids.length>0)
+      {await assign_permission({ role_id: Number(addedRole.id), permission_id: Permissionids })}
+
     } catch (error) {
       console.error('Failed to add role:', error);
     } finally {
@@ -45,9 +54,12 @@ export function RolesJs({ roles: initialRoles }) {
 
   const handleUpdateRole = async (updatedRole) => {
     try {
-      const role = await updateRole(updatedRole.id, updatedRole); // Call API to update role
+      const role = await updateRole(updatedRole.id, updatedRole); 
+      if(Permissionids.length>0)
+      {await assign_permission({ role_id: Number(updatedRole.id), permission_id: Permissionids })}
+
       setRoles((prev) => 
-        prev.map((r) => r.id === role.id ? role : r) // Update role in the local state
+        prev.map((r) => r.id === role.id ? role : r) 
       );
     } catch (error) {
       console.error('Failed to update role:', error);
@@ -60,7 +72,7 @@ export function RolesJs({ roles: initialRoles }) {
   const handleDeleteRole = async (id) => {
     try {
       await deleteRole(id); 
-      setRoles((prev) => prev.filter((role) => role.id !== id)); // Remove role from the state
+      setRoles((prev) => prev.filter((role) => role.id !== id)); 
     } catch (error) {
       console.error('Failed to delete role:', error);
     }
@@ -68,9 +80,7 @@ export function RolesJs({ roles: initialRoles }) {
   const handleEditRole = (role) => {
     setEditingRole(role); 
     setModalOpen(true);   
-  };
-
- 
+  }; 
   return (
     <div className="container mx-auto ">
       <h1 className="text-2xl font-bold mb-5">Roles</h1>
@@ -116,6 +126,7 @@ export function RolesJs({ roles: initialRoles }) {
         onSubmit={editingRole ? handleUpdateRole : handleAddRole}
         permissionOptions={permissionOptions}  
         role={editingRole} 
+        setPermissionids={setPermissionids}
       />
     </div>
   );
