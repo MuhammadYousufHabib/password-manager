@@ -15,8 +15,16 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
     password: '',
     roles: []
   });
+
   
-  
+  const [errors, setErrors] = useState({});
+
+    // Reset the form fields when the modal opens
+    useEffect(() => {
+      if (isOpen) {
+        resetForm(); // Reset the form when the modal opens
+      }
+    }, [isOpen]);
 
   useEffect(() => {
     if (user) {
@@ -38,21 +46,52 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
     }
   }, [user]);
 
+  const resetForm = () => {
+    setNewUser({
+      name: '',
+      username: '',
+      email: '',
+      password: '',
+      role: ''
+    });
+    setErrors({}); // Clear errors
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewUser(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   const handleRoleChange = (selectedOptions) => {
     const selectedRoles = selectedOptions ? selectedOptions.map(option => option.value) : [];
     setNewUser(prev => ({ ...prev, roles: selectedRoles }));
+    setErrors(prev => ({ ...prev, role: '' })); 
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const userToSubmit = user ? { ...newUser, id: user.id } : newUser; 
-    onSubmit(userToSubmit); 
-    onClose();
+    
+    // Validation logic
+    const newErrors = {};
+    if (!newUser.name) newErrors.name = 'Name is required';
+    if (!newUser.username) newErrors.username = 'Username is required';
+    if (!newUser.email) newErrors.email = 'Email is required';
+    if (!newUser.password) newErrors.password = 'Password is required';
+
+    // Role is optional, no validation error for role
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors); // Set the errors state
+      return; // Prevent form submission if there are validation errors
+    }
+
+    // Submit the form data
+    onSubmit({ ...newUser, id: user?.id }); // Include ID for editing
+  };
+
+  const handleClose = () => {
+    resetForm(); // Reset the form fields and errors when closing
+    onClose(); // Call the original onClose function
   };
 
   const formattedRoleOptions = roleOptions.map(role => ({
@@ -61,7 +100,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
   }));
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className={`text-black bg-gray-100 dark:bg-gray-800 dark:text-white`}>
         <DialogHeader>
           <DialogTitle>{user ? 'Edit User' : 'Add New User'}</DialogTitle>
@@ -76,9 +115,11 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
                 value={newUser.name}
                 onChange={handleInputChange}
                 className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
-                required
+                // required
               />
             </div>
+            {errors.name && <span className=" text-red-500 text-sm mt-0">{errors.name}</span>}
+
             <div className="">
               <Label htmlFor="username" className="text-right">Username</Label>
               <Input
@@ -87,9 +128,11 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
                 value={newUser.username}
                 onChange={handleInputChange}
                 className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
-                required
+                // required
               />
             </div>
+            {errors.username && <span className=" text-red-500 text-sm mt-0">{errors.username}</span>}
+
             <div className="">
               <Label htmlFor="email" className="text-right">Email</Label>
               <Input
@@ -99,9 +142,11 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
                 value={newUser.email}
                 onChange={handleInputChange}
                 className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
-                required
+                // required
               />
             </div>
+            {errors.email && <span className=" text-red-500 text-sm mt-0">{errors.email}</span>}
+
             <div className="">
               <Label htmlFor="password" className="text-right">Password</Label>
               <Input
@@ -111,20 +156,20 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
                 value={newUser.password}
                 onChange={handleInputChange}
                 className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
-                required={!user}
+                // required={!user}
               />
             </div>
+            {errors.password && <span className=" text-red-500 text-sm mt-0">{errors.password}</span>}
+
             <div className="">
               <Label htmlFor="roles" className="text-right">Roles</Label>
               <div className="col-span-3">
                 <Select
                   id="roles"
                   name="roles"
-                  value={formattedRoleOptions.filter(option => newUser.roles.includes(option.value))}
-                  onChange={handleRoleChange}
+                  value={formattedRoleOptions.filter(option => (newUser.roles || []).includes(option.value))}
                   options={formattedRoleOptions}
                   isMulti
-                  className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
                   theme={(selectTheme) => ({
                     ...selectTheme,
                     colors: {
@@ -137,6 +182,8 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
                   })}
                 />
               </div>
+              {errors.role && <span className="text-red-500 text-sm mt-0">{errors.role}</span>}
+
             </div>
           </div>
           <DialogFooter>

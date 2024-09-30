@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+
 const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role, theme }) => {
   const [roleData, setRoleData] = useState({
     name: '',

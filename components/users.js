@@ -7,12 +7,21 @@ import { PlusIcon, Pencil, Trash2 } from "lucide-react";
 import AddUserModal from './add-user-modal';
 import { fetchRoles } from '@/services/api/roles';
 import { createUser, deleteUser, updateUser } from '@/services/api/users';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function UsersPage({ users, theme }) { // Added 'theme' prop
   const [usersList, setUsersList] = useState(users);
   const [isModalOpen, setModalOpen] = useState(false);
   const [roleOptions, setRoleOptions] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
+  const [newUser, setNewUser] = useState({
+    name: '',
+    username: '',
+    email: '',
+    password: '',
+    role: ''
+  });
 
   useEffect(() => {
     const loadRoles = async () => {
@@ -27,18 +36,53 @@ export default function UsersPage({ users, theme }) { // Added 'theme' prop
     loadRoles();
   }, []);
 
-  const handleAddUser = async (newUser) => {
-    try {
-      const addedUser = await createUser(newUser);
-      setUsersList((prevUsers) => [
-        ...prevUsers,
-        addedUser 
-      ]);
-    } catch (error) {
-      console.error('Failed to add user:', error);
+ // Handle adding a new user
+ const handleAddUser = async (newUser) => {
+  const newErrors = {};
+
+  // Check for duplication of username or email
+  const userExists = usersList.some(
+    (user) => user.username === newUser.username || user.email === newUser.email
+  );
+
+  if (userExists) {
+    if (usersList.some((user) => user.username === newUser.username)) {
+      newErrors.username = "A user with the same username already exists.";
     }
-    setModalOpen(false);
-  };
+    if (usersList.some((user) => user.email === newUser.email)) {
+      newErrors.email = "A user with the same email already exists.";
+    }
+  }
+
+  // Email validation regex
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newUser.email);
+  if (!emailValid) {
+    newErrors.email = "Please enter a valid email address.";
+  }
+
+  if (Object.keys(newErrors).length > 0) {
+    toast.error("Validation errors. Please check the form.");
+    return; // Prevent form submission
+  }
+
+  // Add new user to list (mock add, no backend integration)
+  setUsersList((prevUsers) => [
+    ...prevUsers,
+    { id: Date.now(), ...newUser }, // Temporary ID for frontend
+  ]);
+
+  // Clear the form fields
+  setNewUser({
+    name: '',
+    username: '',
+    email: '',
+    password: '',
+    role: ''
+  });
+
+  // Close modal after successful submission
+  setModalOpen(false);
+};
 
   const handleDeleteUser = async (id) => {
     try {
@@ -113,12 +157,26 @@ export default function UsersPage({ users, theme }) { // Added 'theme' prop
         isOpen={isModalOpen}
         onClose={() => {
           setModalOpen(false);
-          setEditingUser(null);
-        }}
+           setNewUser({
+                  name: '',
+                  username: '',
+                  email: '',
+                  password: '',
+                  role: ''
+                }); 
+               }}
         onSubmit={editingUser ? handleUpdateUser : handleAddUser}
         roleOptions={roleOptions}
         user={editingUser}
         theme={theme} // Pass down the theme prop to the modal
+      />
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
       />
     </div>
   );
