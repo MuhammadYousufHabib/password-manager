@@ -13,14 +13,13 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project, theme }) => {
 
   useEffect(() => {
     if (project) {
-      
       setName(project.name);
       setDescription(project.description);
     } else {
-      setName('');
-      setDescription('');
+      setName(''); // Reset name when modal is opened
+      setDescription(''); // Reset description when modal is opened
     }
-  }, [project]);
+  }, [project, isOpen]); // Reset fields when project changes or modal opens/closes
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -29,7 +28,9 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project, theme }) => {
       : { name, description };
 
     onSubmit(projectToSubmit);
-    onClose();
+    onClose(); // Close modal after submission
+    setName(''); // Reset fields
+    setDescription(''); // Reset fields
   };
 
   return (
@@ -60,7 +61,11 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project, theme }) => {
             />
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+            <Button type="button" variant="outline" onClick={() => {
+              onClose();
+              setName(''); // Reset fields on close
+              setDescription(''); // Reset fields on close
+            }}>Cancel</Button>
             <Button type="submit" className="ml-2">{project ? 'Update' : 'Add'} Project</Button>
           </DialogFooter>
         </form>

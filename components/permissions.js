@@ -102,3 +102,4 @@ export function PermissionsJs({ permissions, theme }) {
     </div>
   );
 }
+ 

@@ -6,14 +6,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const ModesModal = ({ isOpen, onClose, onSubmit, mode, theme }) => { // Accept the theme prop
+const ModesModal = ({ isOpen, onClose, onSubmit, mode, theme }) => {
   const [modeName, setModeName] = useState('');
- 
+
   useEffect(() => {
     if (mode) {
       setModeName(mode.name);
     } else {
-      setModeName('');
+      setModeName('');  // Reset field when mode is null
     }
   }, [mode]);
 
@@ -26,16 +26,21 @@ const ModesModal = ({ isOpen, onClose, onSubmit, mode, theme }) => { // Accept t
 
     // Prevent submission if modeName is empty
     if (!modeName.trim()) {
-      return; // You could also show an error message here
+      return; // Optionally, show an error message here
     }
 
     onSubmit({ name: modeName });
     setModeName(''); // Reset the state after submission
-    onClose(); 
+    onClose(); // Close the modal after submission
+  };
+
+  const handleClose = () => {
+    setModeName('');  // Reset the field when the modal is closed
+    onClose();  // Trigger the close action
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>  {/* Call handleClose to reset fields on modal close */}
       <DialogContent className={`text-black bg-gray-100 dark:bg-gray-800 dark:text-white`}>
         <DialogHeader>
           <DialogTitle>{mode ? 'Edit Mode' : 'Add New Mode'}</DialogTitle>

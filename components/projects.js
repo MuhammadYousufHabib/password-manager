@@ -8,15 +8,15 @@ import ProjectsModal from './projects-modal';
 import { ProjectDetails } from './project_details';
 
 export function ProjectsJs({ projects }) {
-  const [isEditing, setIsEditing] = useState(null); // Track which index is being edited
-  const [newKey, setNewKey] = useState(''); // State for new key input
-  const [newValue, setNewValue] = useState(''); 
-  const [newMode, setNewMode] = useState(null); // New mode state added
+  const [isEditing, setIsEditing] = useState(null);
+  const [newKey, setNewKey] = useState(''); 
+  const [newValue, setNewValue] = useState('');
+  const [newMode, setNewMode] = useState(null);
   const [projectDetails, setProjectDetails] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [projectList, setProjectList] = useState(projects); 
+  const [projectList, setProjectList] = useState(projects);
   const [editingProject, setEditingProject] = useState(null);
-  const [expandedProjectId, setExpandedProjectId] = useState(null); 
+  const [expandedProjectId, setExpandedProjectId] = useState(null);
 
   const handleAddProject = (newProject) => {
     const newId = Date.now();
@@ -103,8 +103,8 @@ export function ProjectsJs({ projects }) {
                           setNewKey={setNewKey}
                           newValue={newValue}
                           setNewValue={setNewValue}
-                          newMode={newMode} // Pass down newMode
-                          setNewMode={setNewMode} // Pass down setNewMode
+                          newMode={newMode}
+                          setNewMode={setNewMode}
                           isEditing={isEditing}
                           setIsEditing={setIsEditing}
                         />
@@ -117,15 +117,18 @@ export function ProjectsJs({ projects }) {
           </TableBody>
         </Table>
       </div>
-      <Button className="mt-4" onClick={() => { setEditingProject(null); setIsModalOpen(true); }}>
+      <Button className="mt-4" onClick={() => { 
+        setEditingProject(null); 
+        setIsModalOpen(true); 
+      }}>
         <PlusIcon className="h-4 w-4 mr-1" />
         Add Project
       </Button>
       <ProjectsModal 
         isOpen={isModalOpen} 
         onClose={() => {
-          setIsModalOpen(false);
-          setEditingProject(null);
+          setIsModalOpen(false); 
+          setEditingProject(null); 
         }}
         onSubmit={editingProject ? handleUpdateProject : handleAddProject} 
         project={editingProject} 

@@ -7,9 +7,9 @@ import { XIcon } from "lucide-react";
 
 const modeOptions = [
   { value: "mode1", label: "Mode 1" },
-  { value: "mode2", label: "Mode 2" }, { value: "mode1", label: "Mode 1" },
-  { value: "mode2", label: "Mode 2" }, { value: "mode1", label: "Mode 1" },
-  { value: "mode2", label: "Mode 2" }, { value: "mode1", label: "Mode 1" },
+  { value: "mode2", label: "Mode 2" },
+  { value: "mode2", label: "Mode 2" },
+  { value: "mode2", label: "Mode 2" },
   { value: "mode2", label: "Mode 2" },
   { value: "mode3", label: "Mode 3" },
 ];
@@ -25,7 +25,6 @@ export function ProjectDetails({
   setNewMode,
   isEditing,
   setIsEditing,
-  theme, // Add theme prop
 }) {
   const handleKeyChange = (e, index) => {
     const updatedDetails = [...projectDetails];

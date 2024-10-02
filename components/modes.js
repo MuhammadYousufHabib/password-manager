@@ -90,11 +90,13 @@ export function ModesJs({ modes: initialModes, theme }) {  // Accept theme as a 
       </Button>
       <ModesModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={() => setIsModalOpen(false)}  // This will now also reset fields due to `handleClose` in ModesModal
         onSubmit={editingMode ? handleUpdateMode : handleAddMode} 
         mode={editingMode}
         theme={theme}  // Pass theme to ModesModal
       />
+
     </div>
   );
 }
+ 

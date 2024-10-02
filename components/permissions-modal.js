@@ -37,12 +37,19 @@ const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions, permission,
     e.preventDefault();
     const permissionToSubmit = permission ? { ...newPermission, id: permission.id } : newPermission; // Include permission ID if editing
     onSubmit(permissionToSubmit); 
+    // Reset form fields to empty after submission
     setNewPermission({ name: '', allowedApi: '' });
     onClose();
   };
 
+  const resetAndClose = () => { // Renamed this function to avoid conflict
+    // Reset form fields to empty when closing the modal
+    setNewPermission({ name: '', allowedApi: '' });
+    onClose();
+  };
+ 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={resetAndClose}> {/* Use the renamed resetAndClose here */}
       <DialogContent className={`bg-gray-100 text-black  dark:bg-gray-800 dark:text-white `}>
         <DialogHeader>
           <DialogTitle>{permission ? 'Edit Permission' : 'Add New Permission'}</DialogTitle>
@@ -89,4 +96,3 @@ const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions, permission,
 };
 
 export default AddPermissionModal;
- 

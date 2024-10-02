@@ -9,10 +9,8 @@ import { Label } from "@/components/ui/label";
 
 
 const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role, theme }) => {
-  const [roleData, setRoleData] = useState({
-    name: '',
-    permissions: []
-  });
+  const initialRoleData = { name: '', permissions: [] }; // Define the initial state for roleData
+  const [roleData, setRoleData] = useState(initialRoleData);
 
   useEffect(() => {
     if (role) {
@@ -21,7 +19,7 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role, theme 
         permissions: role.permissions || [],
       });
     } else {
-      setRoleData({ name: '', permissions: [] });
+      setRoleData(initialRoleData); // Reset form when there's no role (for adding a new role)
     }
   }, [role]);
 
@@ -37,14 +35,19 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role, theme 
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const roleToSubmit = role ? { ...roleData, id: role.id } : { ...roleData }; 
+    const roleToSubmit = role ? { ...roleData, id: role.id } : { ...roleData };
     onSubmit(roleToSubmit); 
-    setRoleData({ name: '', permissions: [] }); 
-    onClose();
+    setRoleData(initialRoleData); // Reset fields after submission
+    onClose(); // Close modal after submission
+  };
+
+  const handleModalClose = () => {
+    setRoleData(initialRoleData); // Reset fields when modal is closed
+    onClose(); // Trigger modal close
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleModalClose}>
       <DialogContent className={`bg-gray-100 text-black dark:bg-gray-800 dark:text-white`}>
         <DialogHeader>
           <DialogTitle>{role ? 'Edit Role' : 'Add New Role'}</DialogTitle>
@@ -88,5 +91,6 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role, theme 
     </Dialog>
   );
 };
+
 
 export default RolesModal;
