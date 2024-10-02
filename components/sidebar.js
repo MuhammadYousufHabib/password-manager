@@ -1,4 +1,3 @@
-
 import React from "react";
 import Link from "next/link";
 import {
@@ -44,50 +43,8 @@ const routes = [
 ];
 
 const Sidebar = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const sidebarRef = useRef(null); // Reference to the sidebar
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  // Handle clicks outside the sidebar to close it
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-        setIsSidebarOpen(false);
-      }
-    };
-
-    if (isSidebarOpen) {
-      document.addEventListener('click', handleClickOutside);
-    } else {
-      document.removeEventListener('click', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, [isSidebarOpen]);
-
-  // Close the sidebar when a navigation link is clicked
-  const handleLinkClick = () => {
-    setIsSidebarOpen(false);
-  };
-
   return (
-    <div className="bg-card shadow-md">
-      {/* Hamburger icon for small screens */}
-      <div className="lg:hidden flex justify-between items-center p-2">
-        <button onClick={toggleSidebar}>
-          <MenuIcon className="h-8 w-8 text-foreground" />
-        </button>
-        {isSidebarOpen ? null : <DarkModeToggle />}
-      </div>
-
-      {/* Sidebar toggling based on screen size */}
-      <div ref={sidebarRef} className={`lg:block ${isSidebarOpen ? 'block' : 'hidden'}`}>
-        
+    <div className="flex h-screen w-fit bg-gray-100">
       <aside className="w-64 bg-white shadow-md">
         <div className="p-4">
           <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
