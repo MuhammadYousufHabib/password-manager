@@ -1,207 +1,199 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Select from "react-select";
-import { XIcon } from "lucide-react"; 
 
-// Cross icon for removing mode
+import { fetchModes } from "@/services/api/modes";
+import { createField, deleteField, updateKey } from "@/services/api/fields"; 
+import CheckPermission from "./CheckPermission";
 
-const modeOptions = [
-  { value: "mode1", label: "Mode 1" },
-  { value: "mode2", label: "Mode 2" },
-  { value: "mode2", label: "Mode 2" },
-  { value: "mode2", label: "Mode 2" },
-  { value: "mode2", label: "Mode 2" },
-  { value: "mode3", label: "Mode 3" },
-];
+export function ProjectDetails({ expandedProjectId, projects }) {
+  const [passwordVisibility, setPasswordVisibility] = useState({}); 
+  const [key, setKey] = useState(""); 
+  const [value, setValue] = useState(""); 
+  const [modeOptions, setModeOptions] = useState([]); 
+  const [selectedMode, setSelectedMode] = useState(null); 
+  const [currentFields, setCurrentFields] = useState([]); 
+  const [editingFieldId, setEditingFieldId] = useState(null); 
 
-export function ProjectDetails({
-  projectDetails,
-  setProjectDetails,
-  newKey,
-  setNewKey,
-  newValue,
-  setNewValue,
-  newMode,
-  setNewMode,
-  isEditing,
-  setIsEditing,
-}) {
-  const handleKeyChange = (e, index) => {
-    const updatedDetails = [...projectDetails];
-    updatedDetails[index].key = e.target.value;
-    setProjectDetails(updatedDetails);
+  const togglePasswordVisibility = (fieldId) => {
+    setPasswordVisibility((prev) => ({
+      ...prev,
+      [fieldId]: !prev[fieldId], // Toggle visibility for the specific field
+    }));
   };
 
-  const handleValueChange = (e, index) => {
-    const updatedDetails = [...projectDetails];
-    updatedDetails[index].value = e.target.value;
-    setProjectDetails(updatedDetails);
-  };
-
-  const handleModeChange = (selectedMode, index) => {
-    const updatedDetails = [...projectDetails];
-    updatedDetails[index].mode = selectedMode;
-    setProjectDetails(updatedDetails);
-  };
-
-  const handleAdd = () => {
-    if (newKey && newValue) { // Allow mode to be optional
-      const updatedDetails = [
-        ...projectDetails,
-        { key: newKey, value: newValue, mode: newMode || null },
-      ];
-      setProjectDetails(updatedDetails);
-      setNewKey("");
-      setNewValue("");
-      setNewMode(null); // Clear the mode selection after adding
+  const fetchModeList = async () => {
+    try {
+      const modes = await fetchModes();
+      const formattedModes = modes.map((mode) => ({
+        label: mode.name,
+        value: mode.id,
+      }));
+      setModeOptions(formattedModes);
+    } catch (error) {
+      console.error("Error fetching modes:", error);
     }
   };
 
-  const handleEdit = (index) => {
-    setIsEditing(index);
+  useEffect(() => {
+    fetchModeList();
+  }, []);
+
+  useEffect(() => {
+    const currentProject = projects.find(project => project.id === expandedProjectId);
+    if (currentProject) {
+      setCurrentFields(currentProject.fields); 
+    }
+  }, [expandedProjectId, projects]);
+
+  const handleAddField = async () => {
+    if (key && value) {
+      const newField = {
+        project_id: Number(expandedProjectId),
+        key,
+        value, 
+        mode_id: selectedMode ? selectedMode.value : null,
+      };
+      try {
+        await createField(newField);
+        setCurrentFields((prevFields) => [...prevFields, newField]);
+        setKey("");
+        setValue("");
+        setSelectedMode(null);
+      } catch (error) {
+        console.error("Error adding field:", error);
+      }
+    }
   };
 
-  const handleUpdate = () => {
-    setIsEditing(null);
+  const handleDeleteField = async (fieldId) => {
+    try {
+      await deleteField(fieldId);
+      const updatedFields = currentFields.filter((field) => field.id !== fieldId);
+      setCurrentFields(updatedFields);
+    } catch (error) {
+      console.error("Error deleting field:", error);
+    }
   };
 
-  const handleDelete = (index) => {
-    const updatedDetails = projectDetails.filter((_, i) => i !== index);
-    setProjectDetails(updatedDetails);
+  const handleEditField = (field) => {
+    setEditingFieldId(field.id);
+    setKey(field.key);  
+    setValue(field.value);
+    setSelectedMode(modeOptions.find(option => option.value === field.mode_id) || null);
   };
 
-  const handleRemoveMode = (index) => {
-    const updatedDetails = [...projectDetails];
-    updatedDetails[index].mode = null; // Remove the mode
-    setProjectDetails(updatedDetails);
+  const handleUpdateField = async () => {
+    if (editingFieldId && key && value) {
+      const updatedFieldData = {
+        project_id: Number(expandedProjectId),
+        key,
+        value,
+        mode_id: selectedMode ? selectedMode.value : null,
+      };
+      try {
+        await updateKey(editingFieldId, updatedFieldData);
+        const updatedFields = currentFields.map(field =>
+          field.id === editingFieldId ? { ...field, ...updatedFieldData } : field
+        );
+        setCurrentFields(updatedFields);
+        setEditingFieldId(null);
+        setKey(""); 
+        setValue("");
+        setSelectedMode(null);
+      } catch (error) {
+        console.error("Error updating field:", error);
+      }
+    }
   };
 
   return (
-    <div className={`absolute left-0 w-full h-auto bg-white border border-gray-200 shadow-lg z-10 p-4 rounded overflow-hidden dark:bg-gray-800 dark:text-white`}>
-      <h3 className="font-semibold">Project Details:</h3>
+
+    <div className="absolute left-0 w-full bg-white border border-gray-200 shadow-lg z-10 p-4 rounded overflow-hidden h-screen">
       <h2 className="font-semibold">Fields:</h2>
-
-      <div className= {` flex space-x-4 mb-2 `}>
+      <div className="flex space-x-4 mb-2">
         <input
           type="text"
-          value={newKey}
-          className={`border rounded px-2 py-1 w-1/4 h-[40px] dark:border-gray-200 dark:bg-gray-800 dark:text-white`}
-          placeholder="Enter new key"
-          onChange={(e) => setNewKey(e.target.value)}
+          value={editingFieldId ? " " :key}
+          onChange={(e) => setKey(e.target.value)}
+          placeholder="Enter key"
+          className="border rounded px-2 py-1 w-1/4"
+          readOnly={!!editingFieldId} 
         />
         <input
           type="text"
-          value={newValue}
-          className={`border rounded px-2 py-1 w-1/4 h-[40px] dark:border-gray-200 dark:bg-gray-800 dark:text-white`}
-          placeholder="Enter new value"
-          onChange={(e) => setNewValue(e.target.value)}
-        />
-        <div className="dropdown-height dark:bg-gray-800 dark:text-white ">
+          value={editingFieldId ? " " :value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="Enter value"
+          className="border rounded px-2 py-1 w-1/4"
+          readOnly={!!editingFieldId}        />
         <Select
-          value={newMode}
-          onChange={setNewMode}
-          placeholder="Select Mode"
+          value={editingFieldId? " " :  selectedMode}
+          onChange={selected => !editingFieldId && setSelectedMode(selected)} 
           options={modeOptions}
+          placeholder="Select Mode"
           isClearable
-          menuPortalTarget={document.body}
-          styles={{
-            menuPortal: base => ({ ...base, zIndex: 9999 }),
-            option: (provided) => ({
-              ...provided,
-              color: 'black',  // Set the option text color to black
-            }),
-          }}
-          className="text-xs z-40"
+          className="w-1/4"
+          readOnly={!!editingFieldId} 
         />
-
-        </div>
-        <Button
-          className="bg-blue-500 text-white h-[40px] px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-          variant="outline"
-          size="sm"
-          onClick={handleAdd}
-        >
-          Add
-        </Button>
-
+        <CheckPermission permission={"FIELD:ADD"}>
+          <Button variant="outline" size="sm" onClick={handleAddField}>
+            Add
+          </Button>
+        </CheckPermission>
       </div>
 
-      <ul className="mt-2 space-y-1">
-        {projectDetails.map((detail, index) => (
-          <li key={index} className="flex items-center space-x-4">
-            <input
-              type="text"
-              value={detail.key}
-              className={`border rounded px-2 py-1 w-1/4 h-[40px] dark:border-gray-200 dark:bg-gray-800 dark:text-white`}
-              onChange={(e) => handleKeyChange(e, index)}
-              disabled={isEditing !== index}
-            />
-            <input
-              type="text"
-              value={detail.value}
-              className={`border rounded px-2 py-1 w-1/4 h-[40px] dark:border-gray-200 dark:bg-gray-800 dark:text-white`}
-              onChange={(e) => handleValueChange(e, index)}
-              disabled={isEditing !== index}
-            />
+      <h3 className="font-semibold mt-4">Existing Fields:</h3>
+      <ul>
+  {currentFields?.length > 0 && currentFields.map((field) => (
+    <li key={field.id} className="flex justify-left mb-2 space-x-4 items-center"> 
+      <input
+        type="text"
+        value={editingFieldId === field.id ? key : field.key}
+        onChange={(e) => editingFieldId === field.id && setKey(e.target.value)}
+        className="border rounded px-2 py-1 w-1/4"
+      />
+      <div className="relative w-1/4"> 
+        <input
+type={passwordVisibility[field.id] ? "text" : "password"}
+          value={editingFieldId === field.id ? value : field.value}
+          onChange={(e) => editingFieldId === field.id && setValue(e.target.value)}
+          className="border rounded px-2 py-1 w-full"
+        />
+      </div>
+      <button        className="text-xs underline" 
+onClick={() => togglePasswordVisibility(field.id)}      >
+        {passwordVisibility[field.id] ? "Hide" : "Show"} 
+      </button>
+      <Select
+        value={editingFieldId === field.id ? selectedMode : modeOptions.find(option => option.value === field.mode_id) || null}
+        placeholder="Select Mode"
+        isClearable
+        onChange={(selected) => editingFieldId === field.id && setSelectedMode(selected)}
+        options={modeOptions}
+        className="w-1/4"
+      />
+      
+      <CheckPermission permission={"FIELD:DELETE"}>
+        <Button variant="outline" size="sm" className="text-xs text-red-600" onClick={() => handleDeleteField(field.id)}> 
+          Delete
+        </Button>
+      </CheckPermission>
+      <CheckPermission permission={"FIELD:UPDATE"}>
+        {editingFieldId === field.id ? (
+          <Button variant="outline" size="sm" className="text-xs" onClick={handleUpdateField}> 
+            Update
+          </Button>
+        ) : (
+          <Button variant="outline" size="sm" className="text-xs" onClick={() => handleEditField(field)}> 
+            Edit
+          </Button>
+        )}
+      </CheckPermission>
+    </li>
+  ))}
+</ul>
 
-            <div className="w-1/4 flex items-center">
-            <Select
-              value={detail.mode}
-              onChange={(selectedMode) => handleModeChange(selectedMode, index)}
-              options={modeOptions}
-              isDisabled={isEditing !== index}
-              placeholder="Mode (Optional)"
-              menuPortalTarget={document.body}
-              styles={{
-                menuPortal: base => ({ ...base, zIndex: 9999 }),
-                option: (provided) => ({
-                  ...provided,
-                  color: 'black',  // Set the option text color to black
-                }),
-              }}
-            />
-
-              {detail.mode && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemoveMode(index)}
-                  className="ml-2"
-                >
-                  <XIcon className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-
-            {isEditing === index ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleUpdate(index)}
-              >
-                Update
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleEdit(index)}
-              >
-                Edit
-              </Button>
-            )}
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleDelete(index)}
-              className="text-red-500"
-            >
-              Delete
-            </Button>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }

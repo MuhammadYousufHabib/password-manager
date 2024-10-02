@@ -3,7 +3,6 @@ const BASE_URL = "http://localhost:8000";
 let buildHeaders;
 
 if (typeof window === "undefined") {
-  //check if its a server component or a client component
   const { cookies } = require("next/headers");
 
   buildHeaders = () => {
@@ -44,6 +43,8 @@ export const get = async (endpoint) => {
     throw error;
   }
 };
+
+
 export const post = async (endpoint, body) => {
   const url = `${BASE_URL}/${endpoint}`;
   const headers = buildHeaders();
@@ -84,6 +85,26 @@ export const patch = async (endpoint, body) => {
     throw error;
   }
 };
+export const put = async (endpoint, body) => {
+  const url = `${BASE_URL}/${endpoint}`;
+  const headers = buildHeaders();
+  try {
+    const response = await fetch(url, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) {
+      const error = new Error("Failed to fetch PUT");
+      error.status = response.status;
+      throw error;
+    }
+    return response.json();
+  } catch (error) {
+    console.error("API call error:", error);
+    throw error;
+  }
+};
 export const del = async (endpoint) => {
   const url = `${BASE_URL}/${endpoint}`;
   const headers = buildHeaders();
@@ -93,6 +114,9 @@ export const del = async (endpoint) => {
       const error = new Error("Failed to DELETE");
       error.status = response.status;
       throw error;
+    }
+    if (response.status === 204) {
+      return null; 
     }
     return response.json();
   } catch (error) {

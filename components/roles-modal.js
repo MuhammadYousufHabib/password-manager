@@ -8,20 +8,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 
-const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role, theme }) => {
-  const initialRoleData = { name: '', permissions: [] }; // Define the initial state for roleData
-  const [roleData, setRoleData] = useState(initialRoleData);
+const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role ,setPermissionids,assignedPermissions}) => {
+  console.log(assignedPermissions,"these")
+  const [roleData, setRoleData] = useState({
+    name: '',
+    permissions: []
+  });
 
   useEffect(() => {
     if (role) {
       setRoleData({
         name: role.name,
-        permissions: role.permissions || [],
+        permissions: assignedPermissions ? assignedPermissions.map(permission => permission.id) : [],
       });
     } else {
       setRoleData(initialRoleData); // Reset form when there's no role (for adding a new role)
     }
-  }, [role]);
+  }, [role,assignedPermissions]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -30,7 +33,9 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role, theme 
 
   const handlePermissionChange = (selectedOptions) => {
     const selectedPermissions = selectedOptions ? selectedOptions.map(option => option.value) : [];
+
     setRoleData(prev => ({ ...prev, permissions: selectedPermissions }));
+    setPermissionids(selectedPermissions)
   };
 
   const handleSubmit = (e) => {

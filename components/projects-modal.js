@@ -1,36 +1,53 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Select from 'react-select'; 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-const ProjectsModal = ({ isOpen, onClose, onSubmit, project, theme }) => {
+
+const ProjectsModal = ({ isOpen, onClose, onSubmit, project,users,loadUsers,assignedUsers,setassignedUsers }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  
+  useEffect(() => {
+    loadUsers(); 
+  }, []);
 
   useEffect(() => {
     if (project) {
       setName(project.name);
       setDescription(project.description);
+      setassignedUsers(project.assignedUsers || []);
     } else {
-      setName(''); // Reset name when modal is opened
-      setDescription(''); // Reset description when modal is opened
+
+      setName('');
+      setDescription('');
+      setassignedUsers([]);
     }
   }, [project, isOpen]); // Reset fields when project changes or modal opens/closes
 
+  const handleAssignUsersChange = (selectedOptions) => {
+    const selectedUsers = selectedOptions ? selectedOptions.map(option => option.value) : [];
+    setassignedUsers(selectedUsers);
+  };
+
   const handleSubmit = (e) => {
+
     e.preventDefault();
     const projectToSubmit = project 
       ? { id: project.id, name, description }
       : { name, description };
 
     onSubmit(projectToSubmit);
-    onClose(); // Close modal after submission
-    setName(''); // Reset fields
-    setDescription(''); // Reset fields
+
+    setName('');
+    setDescription('');
+    setassignedUsers([])
+    onClose();
   };
 
   return (
@@ -51,6 +68,7 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project, theme }) => {
               className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
             />
           </div>
+
           <div className="mb-4">
             <Label htmlFor="description">Description</Label>
             <Textarea
@@ -58,8 +76,21 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project, theme }) => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
+
             />
           </div>
+
+          <div className="mb-4">
+            <Label htmlFor="assignedUsers">Assign To</Label>
+            <Select
+              isMulti 
+              options={users.map(user => ({ label: user.name, value: user.id }))}
+              value={users.filter(user => assignedUsers.includes(user.id)).map(user => ({ label: user.name, value: user.id }))}
+              onChange={handleAssignUsersChange}
+              className="col-span-3"
+            />
+          </div>
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => {
               onClose();

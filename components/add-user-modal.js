@@ -7,7 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Select from 'react-select';
 
-const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) => { // Added 'theme' prop
+const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, roleids, setroleids, loadRoles, assignedRoles }) => {
+
+  useEffect(() => {
+    loadRoles();
+  }, []);
+
   const [newUser, setNewUser] = useState({
     name: '',
     username: '',
@@ -29,11 +34,11 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
   useEffect(() => {
     if (user) {
       setNewUser({
-        name: user.name,
-        username: user.username,
-        email: user.email,
+        name: user.name || '',
+        username: user.username || '',
+        email: user.email || '',
         password: '',
-        roles: user.roles || []
+        roles: assignedRoles.length > 0 ? assignedRoles.map(role => role.id) : []
       });
     } else {
       setNewUser({
@@ -41,10 +46,10 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
         username: '',
         email: '',
         password: '',
-        roles: []
+        roles:  []
       });
     }
-  }, [user]);
+  }, [user, assignedRoles]);
 
   const resetForm = () => {
     setNewUser({
@@ -66,32 +71,22 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
   const handleRoleChange = (selectedOptions) => {
     const selectedRoles = selectedOptions ? selectedOptions.map(option => option.value) : [];
     setNewUser(prev => ({ ...prev, roles: selectedRoles }));
-    setErrors(prev => ({ ...prev, role: '' })); 
+
+    setroleids(selectedRoles);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Validation logic
-    const newErrors = {};
-    if (!newUser.name) newErrors.name = 'Name is required';
-    if (!newUser.username) newErrors.username = 'Username is required';
-    if (!newUser.email) newErrors.email = 'Email is required';
-    if (!newUser.password) newErrors.password = 'Password is required';
-
-    // Role is optional, no validation error for role
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors); // Set the errors state
-      return; // Prevent form submission if there are validation errors
-    }
-
-    // Submit the form data
-    onSubmit({ ...newUser, id: user?.id }); // Include ID for editing
-  };
-
-  const handleClose = () => {
-    resetForm(); // Reset the form fields and errors when closing
-    onClose(); // Call the original onClose function
+    const userToSubmit = user ? { ...newUser, id: user.id } : newUser;
+    onSubmit(userToSubmit);
+    setNewUser({
+      name: '',
+      username: '',
+      email: '',
+      password: '',
+      roles: []
+    });
+    onClose();
   };
 
   const formattedRoleOptions = roleOptions.map(role => ({
@@ -138,7 +133,6 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
               <Input
                 id="email"
                 name="email"
-                type="email"
                 value={newUser.email}
                 onChange={handleInputChange}
                 className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
@@ -156,7 +150,8 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, theme }) =
                 value={newUser.password}
                 onChange={handleInputChange}
                 className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
-                // required={!user}
+                 required={!user}
+
               />
             </div>
             {errors.password && <span className=" text-red-500 text-sm mt-0">{errors.password}</span>}

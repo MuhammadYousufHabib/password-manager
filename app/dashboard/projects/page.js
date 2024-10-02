@@ -1,14 +1,15 @@
-import React from 'react';
-import { ProjectsJs } from '@/components/projects';
-import { fetchProjects } from '@/services/api/projects';
 
-export default async function Page() {
-  // Uncomment the line below to fetch projects when you're ready to implement the API call.
-  // const projects = await fetchProjects();
+import { ProjectsJs } from '@/components/projects'
+import React from 'react'
+import { fetchProjects } from '@/services/api/projects'
+import { get_projects } from '@/services/api/me'
 
-  return (
-    <div className="bg-background text-foreground min-h-screen">
-      <ProjectsJs projects={[]} />
-    </div>
-  );
+export default async function page(){
+ 
+  const projects=await  get_projects()
+  return(<>
+             <div className="bg-background text-foreground min-h-screen">
+
+         <ProjectsJs projects={projects}/></div>
+  </>)
 }
