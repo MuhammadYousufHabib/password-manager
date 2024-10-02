@@ -1,10 +1,13 @@
-import { DashboardJs } from '@/components/dashboard'
-import React from 'react'
+import { DashboardJs } from '@/components/dashboard';
 
-const Page = () => {
+const Page = ({ theme }) => {
   return (
-    <div><DashboardJs/></div>
-  )
-}
+    <div>
+      <DashboardJs 
+      theme={theme} 
+      />
+    </div>
+  );
+};
 
-export default Page
+export default Page;

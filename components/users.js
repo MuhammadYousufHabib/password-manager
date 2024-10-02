@@ -1,6 +1,8 @@
 "use client"
 import React, { useState } from 'react'
 import validator from "validator";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { PlusIcon, Pencil, Trash2 } from "lucide-react"
@@ -14,6 +16,7 @@ export default function UsersPage({ users }) {
   const [usersList, setUsersList] = useState(users); 
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+
   const [roleOptions, setRoleOptions] = useState([]);
   const [assignedRoles, setassignedRoles] = useState([])
 
@@ -26,7 +29,7 @@ export default function UsersPage({ users }) {
         console.error('Failed to fetch roles:', error);
       }
     };
- 
+
   const handleAddUser = async (newUser) => {
     try {
       
@@ -67,6 +70,7 @@ export default function UsersPage({ users }) {
       console.error('Failed to delete user:', error);
     }
   };
+
   const handleEditUser = async(user) => {
    
     setEditingUser(user);
@@ -86,16 +90,17 @@ export default function UsersPage({ users }) {
         return
      }
       const updatedUserFromApi = await updateUser(updatedUser.id, updatedUser);
+
       if(roleids.length>0)
 {      
   await assign_role_update({ user_id: Number(updatedUser.id), role_id: roleids })
 }
       setUsersList((prevUsers) =>
-        prevUsers.map(user => 
+        prevUsers.map(user =>
           user.id === updatedUser.id ? updatedUserFromApi : user
         )
       );
- 
+
       setModalOpen(false);
       setEditingUser(null);
     } catch (error) {
@@ -103,9 +108,9 @@ export default function UsersPage({ users }) {
     }
   };
   return (
-    <div className="container mx-auto">
+    <div className={`container mx-auto `}>
       <h1 className="text-2xl font-bold mb-5">Users</h1>
-      <div className="border rounded-lg overflow-hidden">
+      <div className={`border rounded-lg overflow-hidden`}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -115,14 +120,15 @@ export default function UsersPage({ users }) {
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody >
             {usersList.map((user) => (
-              <TableRow key={user.id}> 
+              <TableRow key={user.id} >
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
+
                   
                   <CheckPermission permission={"USER:UPDATE"}>
 
@@ -156,8 +162,14 @@ export default function UsersPage({ users }) {
         isOpen={isModalOpen}
         onClose={() => {
           setModalOpen(false);
-          setEditingUser(null);
-        }}
+           setNewUser({
+                  name: '',
+                  username: '',
+                  email: '',
+                  password: '',
+                  role: ''
+                }); 
+               }}
         onSubmit={editingUser ? handleUpdateUser : handleAddUser}
         roleOptions={roleOptions}
         user={editingUser} 
@@ -165,6 +177,14 @@ export default function UsersPage({ users }) {
         setroleids={setroleids}
         loadRoles={loadRoles}
         assignedRoles={assignedRoles}
+
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
       />
     </div>
   );

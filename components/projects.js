@@ -12,6 +12,7 @@ import { assign_project } from '@/services/api/assign';
 import CheckPermission from './CheckPermission';
 
 export function ProjectsJs({ projects }) {
+
   const [assignedUsers, setAssignedUsers] = useState([]); 
   const [isEditing, setIsEditing] = useState(null); 
   const [newKey, setNewKey] = useState(''); 
@@ -19,8 +20,9 @@ export function ProjectsJs({ projects }) {
   const [newMode, setNewMode] = useState(null); 
   const [projectDetails, setProjectDetails] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [projectList, setProjectList] = useState(projects); 
+  const [projectList, setProjectList] = useState(projects);
   const [editingProject, setEditingProject] = useState(null);
+
   const [expandedProjectId, setExpandedProjectId] = useState(null); 
   const [users, setUsers] = useState([]); 
 
@@ -99,12 +101,12 @@ export function ProjectsJs({ projects }) {
     setUsers(usersData);
   };
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto ">
       <h1 className="text-2xl font-bold mb-5">Projects</h1>
-      <div className="border rounded-lg overflow-hidden relative">
+      <div className="border rounded-lg overflow-hidden relative ">
         <Table className="min-w-full table-auto">
           <TableHeader>
-            <TableRow className="bg-gray-100">
+            <TableRow className="">
               <TableHead className="p-4 text-left">Name</TableHead>
               <TableHead className="p-4 text-left">Description</TableHead>
               <TableHead className="p-4 text-left">Actions</TableHead>
@@ -150,7 +152,9 @@ export function ProjectsJs({ projects }) {
                 </TableRow>
                 {expandedProjectId === project.id && (
                   <TableRow>
-                    <TableCell colSpan={4} className="bg-gray-50 p-4">
+                    <TableCell colSpan={4} className="bg-gray-50 p-4  dark:bg-gray-800 dark:text-white">
+                      <div className="border rounded-lg p-4  dark:bg-gray-800 dark:text-white">
+
                         <ProjectDetails
                           project={project}
                           projectDetails={projectDetails}
@@ -159,8 +163,9 @@ export function ProjectsJs({ projects }) {
                           setNewKey={setNewKey}
                           newValue={newValue}
                           setNewValue={setNewValue}
-                          newMode={newMode} 
-                          setNewMode={setNewMode} 
+                          newMode={newMode}
+                          setNewMode={setNewMode}
+
                           isEditing={isEditing}
                           setIsEditing={setIsEditing}
                           expandedProjectId={expandedProjectId}
@@ -175,6 +180,7 @@ export function ProjectsJs({ projects }) {
           </TableBody>
         </Table>
       </div>
+
       <CheckPermission permission={"PROJECT:ADD"}>
 
       <Button className="mt-4" onClick={() => { setEditingProject(null); setIsModalOpen(true); }}>
@@ -184,7 +190,10 @@ export function ProjectsJs({ projects }) {
       </CheckPermission>
       <ProjectsModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={() => {
+          setIsModalOpen(false); 
+          setEditingProject(null); 
+        }}
         onSubmit={editingProject ? handleUpdateProject : handleAddProject} 
         project={editingProject} 
         loadUsers={loadUsers}

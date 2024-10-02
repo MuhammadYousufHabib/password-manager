@@ -5,6 +5,8 @@ import { fetchModes } from '@/services/api/modes'
 export default async function Page(){
   const modes=await fetchModes()
   return (
-    <div><ModesJs modes={modes}/></div>
+    <div className="bg-background text-foreground min-h-screen">
+      <ModesJs modes={modes}/>
+    </div>
   )
 }

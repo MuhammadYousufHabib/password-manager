@@ -1,8 +1,9 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import { get_me } from "@/services/api/me";
 
-export function DashboardJs() {
+export function DashboardJs({ theme }) {
   const [currentUser, setCurrentUser] = useState('');
 
   const getCurrentUser = async () => {
@@ -19,9 +20,11 @@ export function DashboardJs() {
   }, []);
 
   return (
-    <main className="flex-1 p-8">
-      <h2 className="text-3xl font-semibold text-gray-800">Welcome {currentUser}</h2>
-      <p className="mt-4 text-gray-600">
+    <main className={`flex-1 p-8 dark:bg-gray-800 dark:text-white`}>
+      <h2 className={`text-3xl font-semibold dark:bg-gray-800 dark:text-white`}>    
+     Welcome {currentUser}
+</h2>
+      <p       className={`mt-4 dark:bg-gray-800 dark:text-white`}>
         Select an option from the sidebar to manage users, roles, permissions, projects, and modes.
       </p>
     </main>

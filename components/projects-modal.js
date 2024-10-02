@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
+
 const ProjectsModal = ({ isOpen, onClose, onSubmit, project,users,loadUsers,assignedUsers,setassignedUsers }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -22,11 +23,12 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project,users,loadUsers,assi
       setDescription(project.description);
       setassignedUsers(project.assignedUsers || []);
     } else {
+
       setName('');
       setDescription('');
       setassignedUsers([]);
     }
-  }, [project]);
+  }, [project, isOpen]); // Reset fields when project changes or modal opens/closes
 
   const handleAssignUsersChange = (selectedOptions) => {
     const selectedUsers = selectedOptions ? selectedOptions.map(option => option.value) : [];
@@ -41,6 +43,7 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project,users,loadUsers,assi
       : { name, description };
 
     onSubmit(projectToSubmit);
+
     setName('');
     setDescription('');
     setassignedUsers([])
@@ -49,7 +52,7 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project,users,loadUsers,assi
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-100">
+      <DialogContent className={`bg-gray-100 dark:bg-gray-800 dark:text-white`}>
         <DialogHeader>
           <DialogTitle>{project ? 'Edit Project' : 'Add Project'}</DialogTitle>
         </DialogHeader>
@@ -62,6 +65,7 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project,users,loadUsers,assi
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
             />
           </div>
 
@@ -71,6 +75,8 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project,users,loadUsers,assi
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
+
             />
           </div>
 
@@ -86,7 +92,11 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project,users,loadUsers,assi
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+            <Button type="button" variant="outline" onClick={() => {
+              onClose();
+              setName(''); // Reset fields on close
+              setDescription(''); // Reset fields on close
+            }}>Cancel</Button>
             <Button type="submit" className="ml-2">{project ? 'Update' : 'Add'} Project</Button>
           </DialogFooter>
         </form>

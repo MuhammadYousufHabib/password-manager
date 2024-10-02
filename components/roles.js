@@ -10,6 +10,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PlusIcon, Pencil, Trash2 } from "lucide-react";
+
+
 import RolesModal from "./roles-modal";
 import { fetchPermissions } from "@/services/api/permissions";
 import { createRole, deleteRole, updateRole } from "@/services/api/roles";
@@ -18,6 +20,7 @@ import CheckPermission from "./CheckPermission";
 
 export function RolesJs({ roles: initialRoles }) {
   const [Permissionids, setPermissionids] = useState([]);
+
   const [isModalOpen, setModalOpen] = useState(false);
   const [permissionOptions, setPermissionOptions] = useState([]);
   const [editingRole, setEditingRole] = useState(null);
@@ -57,6 +60,7 @@ const [assignedPermissions, setassignedPermissions] = useState([])
       console.error("Failed to add role:", error);
     } finally {
       setModalOpen(false);
+      setEditingRole(null);
     }
   };
   const handleUpdateRole = async (updatedRole) => {
@@ -88,6 +92,8 @@ const [assignedPermissions, setassignedPermissions] = useState([])
       console.error("Failed to delete role:", error);
     }
   };
+
+  
   const handleEditRole = async(role) => {
     setEditingRole(role);
     setModalOpen(true);
@@ -97,10 +103,11 @@ const [assignedPermissions, setassignedPermissions] = useState([])
         console.log("cant get assigned roles",error)
       }
   };
+
   return (
-    <div className="container mx-auto ">
+    <div className={`container mx-auto`}>
       <h1 className="text-2xl font-bold mb-5">Roles</h1>
-      <div className="border rounded-lg overflow-hidden">
+      <div className={`border rounded-lg overflow-hidden `}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -114,6 +121,7 @@ const [assignedPermissions, setassignedPermissions] = useState([])
                 <TableCell>{role.name}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
+
                     <CheckPermission permission={"ROLE:UPDATE"}>
                       <Button
                         onClick={() => handleEditRole(role)}
@@ -156,8 +164,13 @@ const [assignedPermissions, setassignedPermissions] = useState([])
       </Button> </CheckPermission>
       <RolesModal
         isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={() => {
+          setModalOpen(false);
+          setEditingRole(null);
+
+        }}
         onSubmit={editingRole ? handleUpdateRole : handleAddRole}
+
         permissionOptions={permissionOptions}
         role={editingRole}
         setPermissionids={setPermissionids}

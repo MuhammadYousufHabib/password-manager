@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+
 const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role ,setPermissionids,assignedPermissions}) => {
   console.log(assignedPermissions,"these")
   const [roleData, setRoleData] = useState({
@@ -21,7 +22,7 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role ,setPer
         permissions: assignedPermissions ? assignedPermissions.map(permission => permission.id) : [],
       });
     } else {
-      setRoleData({ name: '', permissions: [] });
+      setRoleData(initialRoleData); // Reset form when there's no role (for adding a new role)
     }
   }, [role,assignedPermissions]);
 
@@ -39,15 +40,20 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role ,setPer
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const roleToSubmit = role ? { ...roleData, id: role.id } : { ...roleData }; 
+    const roleToSubmit = role ? { ...roleData, id: role.id } : { ...roleData };
     onSubmit(roleToSubmit); 
-    setRoleData({ name: '', permissions: [] }); 
-    onClose();
+    setRoleData(initialRoleData); // Reset fields after submission
+    onClose(); // Close modal after submission
+  };
+
+  const handleModalClose = () => {
+    setRoleData(initialRoleData); // Reset fields when modal is closed
+    onClose(); // Trigger modal close
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-100 text-black">
+    <Dialog open={isOpen} onOpenChange={handleModalClose}>
+      <DialogContent className={`bg-gray-100 text-black dark:bg-gray-800 dark:text-white`}>
         <DialogHeader>
           <DialogTitle>{role ? 'Edit Role' : 'Add New Role'}</DialogTitle>
         </DialogHeader>
@@ -90,5 +96,6 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role ,setPer
     </Dialog>
   );
 };
+
 
 export default RolesModal;

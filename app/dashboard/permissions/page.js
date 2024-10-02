@@ -7,9 +7,10 @@ export default async function Page() {
   
    const permissions = await fetchPermissions();
 
-    return (
-        <>
-            <PermissionsJs permissions={permissions} />
-        </>
+     return (
+    <div className="bg-background text-foreground min-h-screen">
+      <PermissionsJs permissions={permissions} />
+    </div>
+ 
     );
 }

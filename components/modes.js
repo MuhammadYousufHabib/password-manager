@@ -8,7 +8,7 @@ import ModesModal from './modes-modal';
 import { createMode, updateMode, deleteMode } from '@/services/api/modes';  
 import CheckPermission from './CheckPermission';
 
-export function ModesJs({ modes: initialModes }) {
+export function ModesJs({ modes: initialModes, theme }) {  // Accept theme as a prop
   const [modes, setModes] = useState(initialModes || []); 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMode, setEditingMode] = useState(null);
@@ -53,7 +53,7 @@ export function ModesJs({ modes: initialModes }) {
   return (
     <div className="container mx-auto">
       <h1 className="text-2xl font-bold mb-5">Modes</h1>
-      <div className="border rounded-lg overflow-hidden">
+      <div className={`border rounded-lg overflow-hidden`}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -100,10 +100,13 @@ export function ModesJs({ modes: initialModes }) {
       </CheckPermission>
       <ModesModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={() => setIsModalOpen(false)}  // This will now also reset fields due to `handleClose` in ModesModal
         onSubmit={editingMode ? handleUpdateMode : handleAddMode} 
-        mode={editingMode} 
+        mode={editingMode}
+        theme={theme}  // Pass theme to ModesModal
       />
+
     </div>
   );
 }
+ 
