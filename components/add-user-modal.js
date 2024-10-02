@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Select from 'react-select';
 
-const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user,roleids,setroleids,loadRoles }) => {
-  
-useEffect(() => {
-  loadRoles()
-}, [])
+const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, roleids, setroleids, loadRoles, assignedRoles }) => {
+
+  useEffect(() => {
+    loadRoles();
+  }, []);
 
   const [newUser, setNewUser] = useState({
     name: '',
@@ -24,25 +24,23 @@ useEffect(() => {
   useEffect(() => {
     if (user) {
       setNewUser({
-        name: user.name,
-        username: user.username,
-        email: user.email,
+        name: user.name || '',
+        username: user.username || '',
+        email: user.email || '',
         password: '',
-        roles: user.roles || []
+        roles: assignedRoles.length > 0 ? assignedRoles.map(role => role.id) : []
       });
-    } 
-    
-    else {
+    } else {
       setNewUser({
         name: '',
         username: '',
         email: '',
         password: '',
-        roles: []
+        roles:  []
       });
     }
-  }, [user]);
- 
+  }, [user, assignedRoles]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewUser(prev => ({ ...prev, [name]: value }));
@@ -51,21 +49,20 @@ useEffect(() => {
   const handleRoleChange = (selectedOptions) => {
     const selectedRoles = selectedOptions ? selectedOptions.map(option => option.value) : [];
     setNewUser(prev => ({ ...prev, roles: selectedRoles }));
-    setroleids(selectedRoles)
-
+    setroleids(selectedRoles);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const userToSubmit = user ? { ...newUser, id: user.id } : newUser; 
-    onSubmit(userToSubmit)
-setNewUser(    {
+    const userToSubmit = user ? { ...newUser, id: user.id } : newUser;
+    onSubmit(userToSubmit);
+    setNewUser({
       name: '',
       username: '',
       email: '',
       password: '',
       roles: []
-    })
+    });
     onClose();
   };
 

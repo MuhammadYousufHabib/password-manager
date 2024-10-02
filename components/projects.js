@@ -9,6 +9,7 @@ import { ProjectDetails } from './project_details';
 import { createProject, deleteProject, updateProject } from '@/services/api/projects';
 import { fetchUsers } from '@/services/api/users';
 import { assign_project } from '@/services/api/assign';
+import CheckPermission from './CheckPermission';
 
 export function ProjectsJs({ projects }) {
   const [assignedUsers, setAssignedUsers] = useState([]); 
@@ -50,9 +51,9 @@ export function ProjectsJs({ projects }) {
         ...prevProjects,
         createdProject 
       ]);
-      for(let i=0;i<assignedUsers.length;i++)
+      if(assignedUsers.length>0)
 {      
-  await assign_project({ user_id: Number(assignedUsers[i]), project_id: Number(createdProject.id) })
+  await assign_project({ user_id: assignedUsers, project_id: Number(createdProject.id) })
 }      setIsModalOpen(false);
     } catch (error) {
       console.error("Failed to add project:", error);
@@ -71,9 +72,9 @@ export function ProjectsJs({ projects }) {
           project.id === updatedProject.id ? response : project 
         )
       );
-      for(let i=0;i<assignedUsers.length;i++)
+      if(assignedUsers.length>0)
         {      
-          await assign_project({ user_id: Number(assignedUsers[i]), project_id: Number(updatedProject.id) })
+          await assign_project({ user_id:assignedUsers, project_id: Number(updatedProject.id) })
         } 
       setIsModalOpen(false);
       setEditingProject(null);
@@ -118,17 +119,25 @@ export function ProjectsJs({ projects }) {
                   <TableCell className="p-4">{project.description}</TableCell>
                   <TableCell className="p-4">
                     <div className="flex space-x-2">
+                    <CheckPermission permission={"PROJECT:UPDATE"}>
+
                       <Button size="sm" variant="outline" onClick={() => handleEditProject(project)}>
                         <Pencil className="h-4 w-4 mr-1" />
                         Edit
                       </Button>
+                      </CheckPermission>
+                      <CheckPermission permission={"PROJECT:DELETE"}>
+
                       <Button size="sm" variant="outline" className="text-red-500 hover:text-red-700" onClick={() => handleDeleteProject(project.id)}>
                         <Trash2 className="h-4 w-4 mr-1" />
                         Delete
                       </Button>
+                      </CheckPermission>
                     </div>
                   </TableCell>
                   <TableCell className="p-4">
+                  <CheckPermission permission={"FIELD:GET:ALL"}>
+
                     <Button size="sm" variant="outline" onClick={() => toggleExpandProject(project.id)}>
                       {expandedProjectId === project.id ? (
                         <ChevronUp className="h-4 w-4" />
@@ -136,6 +145,7 @@ export function ProjectsJs({ projects }) {
                         <ChevronDown className="h-4 w-4" />
                       )}
                     </Button>
+                  </CheckPermission>
                   </TableCell>
                 </TableRow>
                 {expandedProjectId === project.id && (
@@ -154,6 +164,7 @@ export function ProjectsJs({ projects }) {
                           isEditing={isEditing}
                           setIsEditing={setIsEditing}
                           expandedProjectId={expandedProjectId}
+                          projects={projects}
 
                         />
                     </TableCell>
@@ -164,10 +175,13 @@ export function ProjectsJs({ projects }) {
           </TableBody>
         </Table>
       </div>
+      <CheckPermission permission={"PROJECT:ADD"}>
+
       <Button className="mt-4" onClick={() => { setEditingProject(null); setIsModalOpen(true); }}>
         <PlusIcon className="h-4 w-4 mr-1" />
         Add Project
       </Button>
+      </CheckPermission>
       <ProjectsModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 

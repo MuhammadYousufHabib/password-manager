@@ -7,13 +7,15 @@ import { PlusIcon, Pencil, Trash2 } from "lucide-react"
 import AddUserModal from './add-user-modal'  
 import { fetchRoles } from '@/services/api/roles'  
 import { createUser,deleteUser,fetchUsers,updateUser } from '@/services/api/users'
-import { assign_role } from '@/services/api/assign'
+import { assign_role, get_assigned_role ,assign_role_update} from '@/services/api/assign'
+import CheckPermission from './CheckPermission';
 export default function UsersPage({ users }) {
   const [roleids, setroleids] = useState([])
   const [usersList, setUsersList] = useState(users); 
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [roleOptions, setRoleOptions] = useState([]);
+  const [assignedRoles, setassignedRoles] = useState([])
 
  
     const loadRoles = async () => {
@@ -65,10 +67,16 @@ export default function UsersPage({ users }) {
       console.error('Failed to delete user:', error);
     }
   };
-  const handleEditUser = (user) => {
+  const handleEditUser = async(user) => {
    
     setEditingUser(user);
     setModalOpen(true); 
+    try   { const response= await get_assigned_role(Number(user.id))
+    setassignedRoles(response)}
+    catch(error){
+      console.log("cant get assigned roles",error)
+    }
+
   };
 
   const handleUpdateUser = async (updatedUser) => {
@@ -79,21 +87,21 @@ export default function UsersPage({ users }) {
      }
       const updatedUserFromApi = await updateUser(updatedUser.id, updatedUser);
       if(roleids.length>0)
-{      await assign_role({ user_id: Number(updatedUser.id), role_id: roleids })
+{      
+  await assign_role_update({ user_id: Number(updatedUser.id), role_id: roleids })
 }
       setUsersList((prevUsers) =>
         prevUsers.map(user => 
           user.id === updatedUser.id ? updatedUserFromApi : user
         )
       );
-  
+ 
       setModalOpen(false);
       setEditingUser(null);
     } catch (error) {
       console.error('Failed to update user:', error);
     }
   };
-
   return (
     <div className="container mx-auto">
       <h1 className="text-2xl font-bold mb-5">Users</h1>
@@ -115,14 +123,21 @@ export default function UsersPage({ users }) {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
+                  
+                  <CheckPermission permission={"USER:UPDATE"}>
+
                     <Button onClick={() => handleEditUser(user)} size="sm" variant="outline">
                       <Pencil className="h-4 w-4 mr-1" />
                       Edit
-                    </Button>
+                    </Button> 
+                    </CheckPermission>
+                    <CheckPermission permission={"USER:DELETE"}>
+
                     <Button onClick={() => handleDeleteUser(user.id)} size="sm" variant="outline" className="text-red-500 hover:text-red-700">
                       <Trash2 className="h-4 w-4 mr-1" />
                       Delete
                     </Button>
+                    </CheckPermission>
                   </div>
                 </TableCell>
               </TableRow>
@@ -130,10 +145,13 @@ export default function UsersPage({ users }) {
           </TableBody>
         </Table>
       </div>
+      <CheckPermission permission={"USER:ADD"}>
+
       <Button className="mt-4" onClick={() => setModalOpen(true)}>
         <PlusIcon className="h-4 w-4 mr-1" />
         Add User
       </Button>
+      </CheckPermission>
       <AddUserModal
         isOpen={isModalOpen}
         onClose={() => {
@@ -146,6 +164,7 @@ export default function UsersPage({ users }) {
         roleids={roleids}
         setroleids={setroleids}
         loadRoles={loadRoles}
+        assignedRoles={assignedRoles}
       />
     </div>
   );

@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PlusIcon, Pencil, Trash2 } from "lucide-react";
+import { PlusIcon, Pencil, Trash2, Check } from "lucide-react";
 import ModesModal from './modes-modal'; 
 import { createMode, updateMode, deleteMode } from '@/services/api/modes';  
+import CheckPermission from './CheckPermission';
 
 export function ModesJs({ modes: initialModes }) {
   const [modes, setModes] = useState(initialModes || []); 
@@ -66,14 +67,20 @@ export function ModesJs({ modes: initialModes }) {
                 <TableCell>{mode.name}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
+                  <CheckPermission permission={"MODE:UPDATE"}>
+
                     <Button onClick={() => handleEditMode(mode)} size="sm" variant="outline">
                       <Pencil className="h-4 w-4 mr-1" />
                       Edit
                     </Button>
+                    </CheckPermission>
+                    <CheckPermission permission={"MODE:DELETE"}>
+
                     <Button onClick={() => handleDeleteMode(mode.id)} size="sm" variant="outline" className="text-red-500 hover:text-red-700">
                       <Trash2 className="h-4 w-4 mr-1" />
                       Delete
                     </Button>
+                    </CheckPermission>
                   </div>
                 </TableCell>
               </TableRow>
@@ -81,6 +88,8 @@ export function ModesJs({ modes: initialModes }) {
           </TableBody>
         </Table>
       </div>
+      <CheckPermission permission={"MODE:ADD"}>
+
       <Button className="mt-4" onClick={() => {
         setEditingMode(null); 
         setIsModalOpen(true);
@@ -88,6 +97,7 @@ export function ModesJs({ modes: initialModes }) {
         <PlusIcon className="h-4 w-4 mr-1" />
         Add Mode
       </Button>
+      </CheckPermission>
       <ModesModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 

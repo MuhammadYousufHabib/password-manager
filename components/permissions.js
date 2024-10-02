@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PlusIcon, Pencil, Trash2 } from "lucide-react";
 import AddPermissionModal from './permissions-modal';
 import { fetchPermissions, createPermission, updatePermission, deletePermission } from '@/services/api/permissions'; 
+import CheckPermission from './CheckPermission';
 
 
 export function PermissionsJs({ permissions }) {
@@ -18,8 +19,8 @@ export function PermissionsJs({ permissions }) {
 
   const handleAddPermission = async (newPermission) => {
     try {
-      const createdPermission = await createPermission(newPermission); // Call API to create new permission
-      setPermissionsList((prev) => [...prev, createdPermission]); // Add the newly created permission to the state
+      const createdPermission = await createPermission(newPermission); 
+      setPermissionsList((prev) => [...prev, createdPermission]); 
     } catch (error) {
       console.error('Failed to add permission:', error);
     }
@@ -69,17 +70,22 @@ export function PermissionsJs({ permissions }) {
             {permissionsList.map((permission) => (
               <TableRow key={permission.id}>
                 <TableCell>{permission.name}</TableCell>
-                {/* <TableCell>{permission.allowed_api}</TableCell> */}
                 <TableCell>
                   <div className="flex space-x-2">
+                  <CheckPermission permission={"PERMISSION:UPDATE"}>
+                  
                     <Button onClick={() => handleEditPermission(permission)} size="sm" variant="outline">
                       <Pencil className="h-4 w-4 mr-1" />
                       Edit
                     </Button>
+                    </CheckPermission>
+                    <CheckPermission permission={"PERMISSION:DELETE"}>
+
                     <Button onClick={() => handleDeletePermission(permission.id)} size="sm" variant="outline" className="text-red-500 hover:text-red-700">
                       <Trash2 className="h-4 w-4 mr-1" />
                       Delete
                     </Button>
+                    </CheckPermission>
                   </div>
                 </TableCell>
               </TableRow>
@@ -87,6 +93,8 @@ export function PermissionsJs({ permissions }) {
           </TableBody>
         </Table>
       </div>
+      <CheckPermission permission={"PERMISSION:ADD"}>
+
       <Button className="mt-4" onClick={() => {
         setEditingPermission(null); 
         setModalOpen(true);
@@ -94,12 +102,13 @@ export function PermissionsJs({ permissions }) {
         <PlusIcon className="h-4 w-4 mr-1" />
         Add Permission
       </Button>
+      </CheckPermission>
       <AddPermissionModal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         onSubmit={editingPermission ? handleUpdatePermission : handleAddPermission}
         apiOptions={allowedApis}
-        permission={editingPermission} // Pass the permission being edited
+        permission={editingPermission} 
       />
     </div>
   );

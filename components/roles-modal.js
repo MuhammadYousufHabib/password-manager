@@ -7,7 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role ,setPermissionids}) => {
+const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role ,setPermissionids,assignedPermissions}) => {
+  console.log(assignedPermissions,"these")
   const [roleData, setRoleData] = useState({
     name: '',
     permissions: []
@@ -17,12 +18,12 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role ,setPer
     if (role) {
       setRoleData({
         name: role.name,
-        permissions: role.permissions || [],
+        permissions: assignedPermissions ? assignedPermissions.map(permission => permission.id) : [],
       });
     } else {
       setRoleData({ name: '', permissions: [] });
     }
-  }, [role]);
+  }, [role,assignedPermissions]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
