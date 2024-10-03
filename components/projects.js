@@ -99,9 +99,9 @@ export function ProjectsJs({ projects }) {
     setUsers(usersData);
   };
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto bg-card">
       <h1 className="text-2xl font-bold mb-5">Projects</h1>
-      <div className="border rounded-lg overflow-hidden relative">
+      <div className="border rounded-lg overflow-hidden relative h-auto">
         <Table className="min-w-full table-auto">
           <TableHeader>
             <TableRow>
@@ -150,7 +150,7 @@ export function ProjectsJs({ projects }) {
                 </TableRow>
                 {expandedProjectId === project.id && (
                   <TableRow>
-                    <TableCell colSpan={4} className="bg-gray-50 p-4">
+                    <TableCell colSpan={4} className="p-4">
                         <ProjectDetails
                           project={project}
                           projectDetails={projectDetails}

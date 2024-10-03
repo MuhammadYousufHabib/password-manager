@@ -31,6 +31,7 @@ export function ProfileJS() {
   }, []);
 
   return (
+  
     <form className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg space-y-6 dark:bg-gray-800 dark:text-gray-100">
       {/* Name Field */}
       <div className="space-y-1">

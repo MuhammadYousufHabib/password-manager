@@ -17,7 +17,7 @@ export function ProjectDetails({ expandedProjectId, projects }) {
   const togglePasswordVisibility = (fieldId) => {
     setPasswordVisibility((prev) => ({
       ...prev,
-      [fieldId]: !prev[fieldId], // Toggle visibility for the specific field
+      [fieldId]: !prev[fieldId], 
     }));
   };
 
@@ -55,7 +55,7 @@ export function ProjectDetails({ expandedProjectId, projects }) {
       };
       try {
         await createField(newField);
-        setCurrentFields((prevFields) => [...prevFields, newField]);
+        setCurrentFields((prevFields) => Array.isArray(prevFields) ? [...prevFields, newField] : [newField]);        
         setKey("");
         setValue("");
         setSelectedMode(null);
@@ -107,7 +107,7 @@ export function ProjectDetails({ expandedProjectId, projects }) {
   };
 
   return (
-    <div className="absolute left-0 w-full bg-white border border-gray-200 shadow-lg z-10 p-4 rounded overflow-hidden h-screen bg-card dark:text-white">
+    <div className="absolute left-0 w-full h-auto  border  shadow-lg z-10 p-4 rounded overflow-hidden h-screen bg-card dark:text-white">
       <h2 className="font-semibold">Fields:</h2>
       <div className="flex space-x-4 mb-2">
         <input
@@ -115,7 +115,7 @@ export function ProjectDetails({ expandedProjectId, projects }) {
           value={editingFieldId ? " " :key}
           onChange={(e) => setKey(e.target.value)}
           placeholder="Enter key"
-          className="border rounded px-2 py-1 w-1/4"
+          className="border rounded px-2 py-1 w-1/4 bg-card dark:text-white"
           readOnly={!!editingFieldId} 
         />
         <input
@@ -123,7 +123,7 @@ export function ProjectDetails({ expandedProjectId, projects }) {
           value={editingFieldId ? " " :value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Enter value"
-          className="border rounded px-2 py-1 w-1/4"
+          className="border rounded px-2 py-1 w-1/4 bg-card dark:text-white"
           readOnly={!!editingFieldId}        />
         <Select
           value={editingFieldId? " " :  selectedMode}
@@ -131,7 +131,11 @@ export function ProjectDetails({ expandedProjectId, projects }) {
           options={modeOptions}
           placeholder="Select Mode"
           isClearable
-          className="w-1/4"
+            menuPortalTarget={document.body} // Render menu in body
+            styles={{
+              menuPortal: base => ({ ...base, zIndex: 9999 }), // Ensure dropdown appears above other elements
+            }}
+            className="text-xs z-40"
           readOnly={!!editingFieldId} 
         />
         <CheckPermission permission={"FIELD:CREATE"}>
@@ -144,32 +148,36 @@ export function ProjectDetails({ expandedProjectId, projects }) {
       <h3 className="font-semibold mt-4">Existing Fields:</h3>
       <ul>
   {currentFields?.length > 0 && currentFields.map((field) => (
-    <li key={field.id} className="flex justify-left mb-2 space-x-4 items-center"> 
+    <li key={field.id} className="flex justify-left mb-2 space-x-4 items-center bg-card dark:text-white"> 
       <input
         type="text"
         value={editingFieldId === field.id ? key : field.key}
         onChange={(e) => editingFieldId === field.id && setKey(e.target.value)}
-        className="border rounded px-2 py-1 w-1/4"
+        className="border rounded px-2 py-1 w-1/4 bg-card dark:text-white"
       />
       <div className="relative w-1/4"> 
         <input
 type={passwordVisibility[field.id] ? "text" : "password"}
           value={editingFieldId === field.id ? value : field.value}
           onChange={(e) => editingFieldId === field.id && setValue(e.target.value)}
-          className="border rounded px-2 py-1 w-full"
+          className="border rounded px-2 py-1 w-full bg-card dark:text-white"
         />
       </div>
-      <button        className="text-xs underline" 
+      <button        className="text-lg " 
 onClick={() => togglePasswordVisibility(field.id)}      >
-        {passwordVisibility[field.id] ? "Hide" : "Show"} 
+        {passwordVisibility[field.id] ? "👁️" : "🙈"} 
       </button>
       <Select
         value={editingFieldId === field.id ? selectedMode : modeOptions.find(option => option.value === field.mode_id) || null}
         placeholder="Select Mode"
         isClearable
+        menuPortalTarget={document.body} // Render menu in body
+        styles={{
+          menuPortal: base => ({ ...base, zIndex: 9999 }), // Ensure dropdown appears above other elements
+        }}
+        className="text-xs z-40"        
         onChange={(selected) => editingFieldId === field.id && setSelectedMode(selected)}
         options={modeOptions}
-        className="w-1/4"
       />
       
       <CheckPermission permission={"FIELD:DELETE"}>
