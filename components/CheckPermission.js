@@ -1,10 +1,15 @@
 "use client"
 import { useEffect, useState } from "react";
-import { me_permission } from "@/services/api/me";
+import { me_permission,get_me } from "@/services/api/me";
 
 function CheckPermission({ permission, children }) {
   const [currentPermissions, setCurrentPermissions] = useState([]);
+const [currentUser, setcurrentUser] = useState()
 
+  const getCurrentUser = async() =>{
+    const response =await get_me()
+    setcurrentUser(response.username);
+  }
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
@@ -17,8 +22,11 @@ function CheckPermission({ permission, children }) {
     };
 
     fetchPermissions();
+    getCurrentUser()
   }, []);
-
+if (currentUser === "admin") {
+  return <>{children}</>;
+}
   if (currentPermissions.some((item) => item.name === permission)) {
     return <>{children}</>;
   }

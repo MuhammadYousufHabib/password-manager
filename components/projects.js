@@ -175,7 +175,7 @@ export function ProjectsJs({ projects }) {
           </TableBody>
         </Table>
       </div>
-      <CheckPermission permission={"PROJECT:ADD"}>
+      <CheckPermission permission={"PROJECT:CREATE"}>
 
       <Button className="mt-4" onClick={() => { setEditingProject(null); setIsModalOpen(true); }}>
         <PlusIcon className="h-4 w-4 mr-1" />
