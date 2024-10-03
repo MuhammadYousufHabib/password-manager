@@ -1,12 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { UsersIcon, ShieldIcon, KeyIcon, FolderIcon, LayersIcon, MenuIcon, XIcon,LogOutIcon } from "lucide-react";
 import CheckPermission from "./CheckPermission";
 import DarkModeToggle from "@/app/dashboard/DarkModeToggle";
 import { deleteCookie } from 'cookies-next'; 
 import { useRouter } from "next/navigation"; 
-
+import { get_me } from "@/services/api/me";
 
 const routes = [
   {
@@ -48,6 +48,18 @@ const routes = [
 ];
 
 const Sidebar = () => {
+  const [currentUser, setcurrentUser] = useState()
+
+  const getCurrentUser=  async()=>{
+    const response =await get_me()
+    console.log(response.username)
+   setcurrentUser(response.username)
+   }
+   useEffect(() => {
+      getCurrentUser()
+   }, [])
+  
+
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter(); 
   const toggleSidebar = () => {

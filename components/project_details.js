@@ -134,7 +134,7 @@ export function ProjectDetails({ expandedProjectId, projects }) {
           className="w-1/4"
           readOnly={!!editingFieldId} 
         />
-        <CheckPermission permission={"FIELD:ADD"}>
+        <CheckPermission permission={"FIELD:CREATE"}>
           <Button variant="outline" size="sm" onClick={handleAddField}>
             Add
           </Button>
