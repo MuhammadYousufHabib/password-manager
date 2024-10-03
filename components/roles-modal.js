@@ -47,7 +47,7 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role ,setPer
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-100 text-black">
+      <DialogContent className="bg-gray-100 text-black bg-card dark:text-white">
         <DialogHeader>
           <DialogTitle>{role ? 'Edit Role' : 'Add New Role'}</DialogTitle>
         </DialogHeader>

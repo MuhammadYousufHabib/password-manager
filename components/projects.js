@@ -104,7 +104,7 @@ export function ProjectsJs({ projects }) {
       <div className="border rounded-lg overflow-hidden relative">
         <Table className="min-w-full table-auto">
           <TableHeader>
-            <TableRow className="bg-gray-100">
+            <TableRow>
               <TableHead className="p-4 text-left">Name</TableHead>
               <TableHead className="p-4 text-left">Description</TableHead>
               <TableHead className="p-4 text-left">Actions</TableHead>
@@ -175,7 +175,7 @@ export function ProjectsJs({ projects }) {
           </TableBody>
         </Table>
       </div>
-      <CheckPermission permission={"PROJECT:ADD"}>
+      <CheckPermission permission={"PROJECT:CREATE"}>
 
       <Button className="mt-4" onClick={() => { setEditingProject(null); setIsModalOpen(true); }}>
         <PlusIcon className="h-4 w-4 mr-1" />

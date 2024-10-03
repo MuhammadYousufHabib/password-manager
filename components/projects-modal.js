@@ -49,7 +49,7 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project,users,loadUsers,assi
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-100">
+      <DialogContent className="bg-gray-100 text-black bg-card dark:text-white">
         <DialogHeader>
           <DialogTitle>{project ? 'Edit Project' : 'Add Project'}</DialogTitle>
         </DialogHeader>

@@ -107,7 +107,7 @@ export function ProjectDetails({ expandedProjectId, projects }) {
   };
 
   return (
-    <div className="absolute left-0 w-full bg-white border border-gray-200 shadow-lg z-10 p-4 rounded overflow-hidden h-screen">
+    <div className="absolute left-0 w-full bg-white border border-gray-200 shadow-lg z-10 p-4 rounded overflow-hidden h-screen bg-card dark:text-white">
       <h2 className="font-semibold">Fields:</h2>
       <div className="flex space-x-4 mb-2">
         <input

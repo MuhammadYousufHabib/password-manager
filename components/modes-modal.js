@@ -36,7 +36,7 @@ const ModesModal = ({ isOpen, onClose, onSubmit, mode }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-100">
+      <DialogContent className="bg-gray-100 text-black dark:bg-gray-900 dark:text-white">
         <DialogHeader>
           <DialogTitle>{mode ? 'Edit Mode' : 'Add New Mode'}</DialogTitle>
         </DialogHeader>

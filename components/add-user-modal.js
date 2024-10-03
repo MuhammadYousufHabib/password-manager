@@ -73,7 +73,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, roleids, s
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-100 text-black">
+      <DialogContent className="bg-gray-100 text-black dark:bg-gray-900 dark:text-white">
         <DialogHeader>
           <DialogTitle>{user ? 'Edit User' : 'Add New User'}</DialogTitle>
         </DialogHeader>

@@ -1,9 +1,8 @@
-"use client"; // This makes it a client component
+"use client"; 
 
 import React, { useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label';
 
-// Table components
 const Table = ({ children, className }) => <table className={className}>{children}</table>;
 const TableHead = ({ children }) => <thead>{children}</thead>;
 const TableBody = ({ children }) => <tbody>{children}</tbody>;
@@ -54,7 +53,7 @@ export function ProfileJS() {
   };
 
   return (
-    <form className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg space-y-6 dark:bg-gray-800 dark:text-gray-100">
+    <form className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg space-y-6">
       {/* Name Field */}
       <div className="space-y-1">
         <Label htmlFor="name" className="text-sm font-medium">Name</Label>
@@ -63,7 +62,7 @@ export function ProfileJS() {
           id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="border rounded-md p-3 w-full text-sm dark:bg-gray-700 dark:border-gray-600"
+          className="border rounded-md p-3 w-full text-sm "
           placeholder="Enter your name"
         />
       </div>
@@ -76,7 +75,7 @@ export function ProfileJS() {
           id="username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="border rounded-md p-3 w-full text-sm dark:bg-gray-700 dark:border-gray-600"
+          className="border rounded-md p-3 w-full text-sm "
           placeholder="Enter your username"
         />
       </div>
@@ -89,7 +88,7 @@ export function ProfileJS() {
           id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="border rounded-md p-3 w-full text-sm dark:bg-gray-700 dark:border-gray-600"
+          className="border rounded-md p-3 w-full text-sm "
           placeholder="Enter your email"
         />
       </div>
@@ -101,15 +100,15 @@ export function ProfileJS() {
           <button
             type="button"
             onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-            className="text-sm border rounded-md p-3 w-full dark:bg-gray-700 dark:border-gray-600"
+            className="text-sm border rounded-md p-3 w-full "
           >
             {role || "Select role"}
           </button>
           {showRoleDropdown && (
-            <div className="absolute z-50 bg-white border rounded-md shadow-md w-full dark:bg-gray-700 dark:border-gray-600 mt-1">
+            <div className="absolute z-50 bg-white border rounded-md shadow-md w-full  mt-1">
               <Table className="table-auto w-full">
                 <TableHead>
-                  <TableRow className="bg-gray-100 dark:bg-gray-600">
+                  <TableRow className="bg-gray-100 ">
                     <TableHeader className="text-left p-2">Role</TableHeader>
                   </TableRow>
                 </TableHead>
@@ -137,15 +136,15 @@ export function ProfileJS() {
           <button
             type="button"
             onClick={() => setShowPermissionDropdown(!showPermissionDropdown)}
-            className="text-sm border rounded-md p-3 w-full dark:bg-gray-700 dark:border-gray-600"
+            className="text-sm border rounded-md p-3 w-full "
           >
             {permission || "Select permission"}
           </button>
           {showPermissionDropdown && (
-            <div className="absolute z-50 bg-white border rounded-md shadow-md w-full dark:bg-gray-700 dark:border-gray-600 mt-1">
+            <div className="absolute z-50 bg-white border rounded-md shadow-md w-full  mt-1">
               <Table className="table-auto w-full">
                 <TableHead>
-                  <TableRow className="bg-gray-100 dark:bg-gray-600">
+                  <TableRow className="bg-gray-100 ">
                     <TableHeader className="text-left p-2">Permission</TableHeader>
                   </TableRow>
                 </TableHead>
