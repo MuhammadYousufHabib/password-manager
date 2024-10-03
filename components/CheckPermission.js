@@ -5,6 +5,7 @@ import { me_permission } from "@/services/api/me";
 function CheckPermission({ permission, children }) {
   const [currentPermissions, setCurrentPermissions] = useState([]);
 
+
   useEffect(() => {
     const fetchPermissions = async () => {
       try {

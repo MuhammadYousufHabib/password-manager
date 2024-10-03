@@ -40,6 +40,12 @@ const routes = [
     icon: () => <LayersIcon className="w-5 h-5 mr-3" />,
     permission: "MODE:GET:ALL",
   },
+  {
+    name: "My Profile",
+    href: "/dashboard/profile",
+    icon: () => <ShieldIcon className="w-5 h-5 mr-3" />,
+    permission: "ROLE:GET:ALL",  //   yaha changes krni hai API's mn ......................................
+  },
 ];
 
 const Sidebar = () => {
