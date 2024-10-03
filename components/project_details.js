@@ -172,9 +172,9 @@ onClick={() => togglePasswordVisibility(field.id)}      >
         value={editingFieldId === field.id ? selectedMode : modeOptions.find(option => option.value === field.mode_id) || null}
         placeholder="Select Mode"
         isClearable
-        menuPortalTarget={document.body} // Render menu in body
+        menuPortalTarget={document.body} 
         styles={{
-          menuPortal: base => ({ ...base, zIndex: 9999 }), // Ensure dropdown appears above other elements
+          menuPortal: base => ({ ...base, zIndex: 9999 }), 
         }}
         className="text-xs z-40"        
         onChange={(selected) => editingFieldId === field.id && setSelectedMode(selected)}
