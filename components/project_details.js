@@ -55,7 +55,8 @@ export function ProjectDetails({ expandedProjectId, projects }) {
       };
       try {
         await createField(newField);
-        setCurrentFields((prevFields) => Array.isArray(prevFields) ? [...prevFields, newField] : [newField]);        
+        setCurrentFields((prevFields) => Array.isArray(prevFields) ? [...prevFields, newField] : [newField]);
+
         setKey("");
         setValue("");
         setSelectedMode(null);
