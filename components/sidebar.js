@@ -13,7 +13,7 @@ const routes = [
     name: "Users",
     href: "/dashboard/users",
     icon: () => <UsersIcon className="w-5 h-5 mr-3" />,
-    permission: "USER:LIST",
+    permission: "USER:GET:ALL",
   },
   {
     name: "Roles",
@@ -101,7 +101,6 @@ const Sidebar = () => {
             <h1 className="text-2xl font-bold ">Dashboard</h1>
             <DarkModeToggle/>
           </div>
-          {/* Close button for mobile */}
           <button className="lg:hidden p-2 focus:outline-none" onClick={toggleSidebar}>
             <XIcon className="w-6 h-6 " />
           </button>
