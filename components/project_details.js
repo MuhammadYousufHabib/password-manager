@@ -107,7 +107,7 @@ export function ProjectDetails({ expandedProjectId, projects }) {
   };
 
   return (
-    <div className="absolute left-0 w-full h-auto  border  shadow-lg z-10 p-4 rounded overflow-hidden h-screen bg-card dark:text-white">
+    <div className="absolute left-0 w-full h-auto  border  shadow-lg z-10 p-4 rounded overflow-hidden  bg-card dark:text-white">
       <h2 className="font-semibold">Fields:</h2>
       <div className="flex space-x-4 mb-2">
         <input
@@ -145,8 +145,8 @@ export function ProjectDetails({ expandedProjectId, projects }) {
         </CheckPermission>
       </div>
 
-      <h3 className="font-semibold mt-4">Existing Fields:</h3>
       <ul>
+      {currentFields?.length > 0 &&  <h3 className="font-semibold mt-4">Existing Fields:</h3>}
   {currentFields?.length > 0 && currentFields.map((field) => (
     <li key={field.id} className="flex justify-left mb-2 space-x-4 items-center bg-card dark:text-white"> 
       <input

@@ -75,7 +75,7 @@ const Sidebar = () => {
     router.push('/login');
   };
   return (
-    <div className="relative ">
+    <div className="relative sm:flex sm:justify-between">
       <div className="  flex items-center lg:hidden">  
         <button
           className="lg:hidden p-2 focus:outline-none"
@@ -120,7 +120,25 @@ const Sidebar = () => {
             </CheckPermission>
           ))}
         </nav>
+<div className=" bottom-0 w-full my-4 ">
+  <button
+    onClick={handleLogout}
+    className="flex items-center w-full sm:w-auto px-4 py-2 text-left sm:text-right text-red-600 hover:bg-red-500 hover:text-white"
+  >
+    <LogOutIcon className="w-5 h-5 mr-3 sm:mr-0 sm:ml-3" />
+    Logout
+  </button>
+</div>
       </div>
+<div className=" sm:top-0 sm:right-0 sm:w-auto sm:mb-0 lg:hidden">
+  <button
+    onClick={handleLogout}
+    className=" sm:w-auto px-4 py-2 text-left sm:text-right text-red-600 hover:bg-red-500 hover:text-white"
+  >
+    <LogOutIcon className="w-5 h-5 mr-3 sm:mr-0 sm:ml-3" />
+    Logout
+  </button>
+</div>
 
       {/* Overlay */}
       {isOpen && (
@@ -129,15 +147,8 @@ const Sidebar = () => {
           onClick={closeSidebar}
         />
       )}
-              <div className="absolute bottom-0 w-full mb-4">
-          <button
-            onClick={handleLogout}
-            className="flex items-center w-full px-4 py-2 text-left text-red-600 hover:bg-red-500 hover:text-white"
-          >
-            <LogOutIcon className="w-5 h-5 mr-3" />
-            Logout
-          </button>
-        </div>
+
+
 
     </div>
   );
