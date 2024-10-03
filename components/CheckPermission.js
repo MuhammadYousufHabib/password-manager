@@ -10,6 +10,7 @@ const [currentUser, setcurrentUser] = useState()
     const response =await get_me()
     setcurrentUser(response.username);
   }
+
   useEffect(() => {
     const fetchPermissions = async () => {
       try {

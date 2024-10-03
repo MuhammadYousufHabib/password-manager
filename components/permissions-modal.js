@@ -43,7 +43,7 @@ const AddPermissionModal = ({ isOpen, onClose, onSubmit, apiOptions, permission 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-100 text-black">
+      <DialogContent className="bg-gray-100 text-black bg-card dark:text-white">
         <DialogHeader>
           <DialogTitle>{permission ? 'Edit Permission' : 'Add New Permission'}</DialogTitle>
         </DialogHeader>
