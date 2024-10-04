@@ -88,7 +88,7 @@ export function ModesJs({ modes: initialModes }) {
           </TableBody>
         </Table>
       </div>
-      <CheckPermission permission={"MODE:ADD"}>
+      <CheckPermission permission={"MODE:CREATE"}>
 
       <Button className="mt-4" onClick={() => {
         setEditingMode(null); 

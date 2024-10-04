@@ -8,7 +8,7 @@ import ProjectsModal from './projects-modal';
 import { ProjectDetails } from './project_details';
 import { createProject, deleteProject, updateProject } from '@/services/api/projects';
 import { fetchUsers } from '@/services/api/users';
-import { assign_project } from '@/services/api/assign';
+import { assign_project, get_assigned_project_users,assign_project_update } from '@/services/api/assign';
 import CheckPermission from './CheckPermission';
 
 export function ProjectsJs({ projects }) {
@@ -23,7 +23,7 @@ export function ProjectsJs({ projects }) {
   const [editingProject, setEditingProject] = useState(null);
   const [expandedProjectId, setExpandedProjectId] = useState(null); 
   const [users, setUsers] = useState([]); 
-
+const [usersOfProject, setusersOfProject] = useState([])
 
 
 
@@ -59,14 +59,21 @@ export function ProjectsJs({ projects }) {
       console.error("Failed to add project:", error);
     }
   };
-  const handleEditProject = (project) => {
+  const handleEditProject = async(project) => {
     setEditingProject(project);
     setIsModalOpen(true);
+    try{
+       const response=  await get_assigned_project_users(project.id)
+       setusersOfProject(response)
+    }
+    catch(error){
+      console.log("cant get assinged users of a project", error)
+    }
   };
 
   const handleUpdateProject = async (updatedProject) => {
     try {
-      const response = await updateProject(updatedProject.id, updatedProject); 
+      const response = await (updatedProject.id, updatedProject); 
       setProjectList((prevProjects) => 
         prevProjects.map((project) => 
           project.id === updatedProject.id ? response : project 
@@ -74,7 +81,7 @@ export function ProjectsJs({ projects }) {
       );
       if(assignedUsers.length>0)
         {      
-          await assign_project({ user_id:assignedUsers, project_id: Number(updatedProject.id) })
+          await assign_project_update({ user_id:assignedUsers, project_id: Number(updatedProject.id) })
         } 
       setIsModalOpen(false);
       setEditingProject(null);
@@ -82,7 +89,6 @@ export function ProjectsJs({ projects }) {
       console.error("Failed to update project:", error);
     }
   };
-
   const handleDeleteProject = async (id) => {
     try {
       await deleteProject(id); 
@@ -191,6 +197,8 @@ export function ProjectsJs({ projects }) {
         users={users}
         assignedUsers={assignedUsers}
         setassignedUsers={setAssignedUsers}
+        usersOfProject={usersOfProject}
+        setUsersOfProject={setusersOfProject}
 
 />
     </div>

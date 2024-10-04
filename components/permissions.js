@@ -15,10 +15,12 @@ export function PermissionsJs({ permissions }) {
   const [editingPermission, setEditingPermission] = useState(null);
   const [permissionsList, setPermissionsList] = useState(permissions);
 
-
-
   const handleAddPermission = async (newPermission) => {
-    try {
+
+    if (permissionsList.map(permission => permission.name).includes(newPermission.name)) {
+      alert("Permission already exists!");
+      return;
+    }   try {
       const createdPermission = await createPermission(newPermission); 
       setPermissionsList((prev) => [...prev, createdPermission]); 
     } catch (error) {
@@ -93,7 +95,7 @@ export function PermissionsJs({ permissions }) {
           </TableBody>
         </Table>
       </div>
-      <CheckPermission permission={"PERMISSION:ADD"}>
+      <CheckPermission permission={"PERMISSION:CREATE"}>
 
       <Button className="mt-4" onClick={() => {
         setEditingPermission(null); 

@@ -88,6 +88,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, roleids, s
                 onChange={handleInputChange}
                 className="col-span-3"
                 required
+                readOnly ={user}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -99,6 +100,8 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, roleids, s
                 onChange={handleInputChange}
                 className="col-span-3"
                 required
+                readOnly ={user}
+
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -110,9 +113,11 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, roleids, s
                 onChange={handleInputChange}
                 className="col-span-3"
                 required
+                readOnly ={user}
+
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+           { !user && <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="password" className="text-right">Password</Label>
               <Input
                 id="password"
@@ -123,7 +128,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, roleids, s
                 className="col-span-3"
                 required
               />
-            </div>
+            </div>}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="roles" className="text-right">Roles</Label>
               <div className="col-span-3">

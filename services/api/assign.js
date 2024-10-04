@@ -12,5 +12,5 @@ export const assign_project = async (projectData) => await post("assign_project/
 export const assign_project_update = async (projectData) => await put("assign_project/update", projectData);
 export const get_assigned_role = async (userId) => await get(`user/${userId}/roles`);
 export const get_assigned_permission = async (roleId) => await get(`role/${roleId}/permissions`);
-export const get_assigned_project = async (userId) => await get(`user/${userId}/projects`);
+export const get_assigned_project_users = async (projectId) => await get(`project/${projectId}/users`);
 
