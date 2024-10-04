@@ -142,7 +142,7 @@ const [assignedPermissions, setassignedPermissions] = useState([])
           </TableBody>
         </Table>
       </div>
-      <CheckPermission permission={"ROLE:ADD"}>
+      <CheckPermission permission={"ROLE:CREATE"}>
 
       <Button
         className="mt-4"

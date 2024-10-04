@@ -8,10 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-const ProjectsModal = ({ isOpen, onClose, onSubmit, project,users,loadUsers,assignedUsers,setassignedUsers }) => {
+const ProjectsModal = ({ isOpen, onClose, onSubmit, project, users, loadUsers, assignedUsers, setassignedUsers, usersOfProject }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  
+
   useEffect(() => {
     loadUsers(); 
   }, []);
@@ -20,13 +20,16 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project,users,loadUsers,assi
     if (project) {
       setName(project.name);
       setDescription(project.description);
-      setassignedUsers(project.assignedUsers || []);
+
+      // Map the usersOfProject to get their IDs and set them as assignedUsers
+      const assignedUserIds = usersOfProject?.users?.map(user => user.id) || [];
+      setassignedUsers(assignedUserIds);
     } else {
       setName('');
       setDescription('');
       setassignedUsers([]);
     }
-  }, [project]);
+  }, [project, usersOfProject]);
 
   const handleAssignUsersChange = (selectedOptions) => {
     const selectedUsers = selectedOptions ? selectedOptions.map(option => option.value) : [];
@@ -34,16 +37,15 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project,users,loadUsers,assi
   };
 
   const handleSubmit = (e) => {
-
     e.preventDefault();
     const projectToSubmit = project 
-      ? { id: project.id, name, description }
-      : { name, description };
+      ? { id: project.id, name, description, assignedUsers }
+      : { name, description, assignedUsers };
 
     onSubmit(projectToSubmit);
     setName('');
     setDescription('');
-    setassignedUsers([])
+    setassignedUsers([]);
     onClose();
   };
 

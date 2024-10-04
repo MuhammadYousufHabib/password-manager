@@ -145,7 +145,7 @@ export default function UsersPage({ users }) {
           </TableBody>
         </Table>
       </div>
-      <CheckPermission permission={"USER:ADD"}>
+      <CheckPermission permission={"USER:CREATE"}>
 
       <Button className="mt-4" onClick={() => setModalOpen(true)}>
         <PlusIcon className="h-4 w-4 mr-1" />

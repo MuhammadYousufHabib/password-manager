@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { UserIcon } from "lucide-react";
 import Link from "next/link";
-import { UsersIcon, ShieldIcon, KeyIcon, FolderIcon, LayersIcon, MenuIcon, XIcon,LogOutIcon } from "lucide-react";
+import { UsersIcon, ShieldIcon, KeyIcon, FolderIcon,FileIcon, LayersIcon, MenuIcon, XIcon,LogOutIcon } from "lucide-react";
 import CheckPermission from "./CheckPermission";
 import DarkModeToggle from "@/app/dashboard/DarkModeToggle";
 import { deleteCookie } from 'cookies-next'; 
@@ -28,22 +29,10 @@ const routes = [
     permission: "PERMISSION:GET:ALL",
   },
   {
-    name: "Projects",
-    href: "/dashboard/projects",
-    icon: () => <FolderIcon className="w-5 h-5 mr-3" />,
-    permission: "PROJECT:GET:ALL",
-  },
-  {
     name: "Modes",
     href: "/dashboard/modes",
     icon: () => <LayersIcon className="w-5 h-5 mr-3" />,
     permission: "MODE:GET:ALL",
-  },
-  {
-    name: "My Profile",
-    href: "/dashboard/profile",
-    icon: () => <ShieldIcon className="w-5 h-5 mr-3" />,
-    // permission: "ROLE:GET:ALL", 
   },
 ];
 
@@ -110,14 +99,29 @@ const Sidebar = () => {
             <CheckPermission permission={item.permission} key={index}>
               <Link
                 href={item.href}
-                className="flex items-center px-4 py-2 mt-1  hover:bg-gray-500"
+                className="flex items-center px-4 py-2 mt-1  hover:bg-gray-500 hover:text-white"
                 onClick={closeSidebar}
               >
                 {item.icon()}
                 {item.name}
               </Link>
+
             </CheckPermission>
           ))}
+              <Link
+          href="/dashboard/projects"
+          className="flex items-center px-4 py-2 mt-1 hover:bg-gray-500"
+        >
+          <FileIcon className="w-5 h-5 mr-3" />
+          Projects
+        </Link>
+          <Link
+          href="/dashboard/profile"
+          className="flex items-center px-4 py-2 mt-1 hover:bg-gray-500"
+        >
+          <UserIcon className="w-5 h-5 mr-3" />
+          Profile 
+        </Link>
         </nav>
         <div className=" bottom-0 w-full my-4 ">
   <button
@@ -139,7 +143,6 @@ const Sidebar = () => {
   </button>
 </div>
 
-      {/* Overlay */}
       {isOpen && (
         <div
           className="fixed inset-0 z-30 bg-black opacity-50 lg:hidden"
