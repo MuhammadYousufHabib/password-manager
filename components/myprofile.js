@@ -51,11 +51,11 @@ export function ProfileJS() {
     }
   };
 
-  if (loading) return <p className="text-center text-gray-500">Loading...</p>;
+  if (loading) return <p className="text-center ">Loading...</p>;
   if (error) return <p className="text-red-500">Error: {error}</p>;
 
   return (      
-    <div className="max-w-lg mx-auto p-4 bg-white shadow-md rounded-lg space-y-2 dark:bg-gray-800 dark:text-gray-100">
+    <div className="max-w-lg mx-auto p-4  shadow-lg rounded-lg space-y-2 bg-card dark:text-white">
       <h2 className="text-lg font-bold">User Profile</h2>
       <div>
         <p className="font-semibold">Name:</p>
@@ -64,23 +64,27 @@ export function ProfileJS() {
             type="text" 
             value={editedName} 
             onChange={(e) => setEditedName(e.target.value)} 
-            className="border rounded-md p-1 w-full" 
+            className="border rounded-md p-1 w-full bg-card dark:text-white" 
           />
         ) : (
-          <p>{currentUser.name || "No name available"}</p>
+          <p className="border rounded-md p-1 w-full bg-card dark:text-white" >{currentUser.name || "No name available"}</p>
         )}
       </div>
       <div>
+        <p className="font-semibold">Username:</p>        
+          <p className="border rounded-md p-1 w-full bg-card dark:text-white" >{currentUser.username || "No name available"}</p>
+      </div>
+      <div >
         <p className="font-semibold">Email:</p>
         {isEditing ? (
           <input 
             type="email" 
             value={editedEmail} 
             onChange={(e) => setEditedEmail(e.target.value)} 
-            className="border rounded-md p-1 w-full" 
+            className="border rounded-md p-1 w-full bg-card dark:text-white" 
           />
         ) : (
-          <p>{currentUser.email || "No email available"}</p>
+          <p className="border rounded-md p-1 w-full bg-card dark:text-white" >{currentUser.email || "No email available"}</p>
         )}
       </div>
       <Button onClick={handleEditToggle} className="mt-2">
@@ -97,7 +101,7 @@ export function ProfileJS() {
           <ul className="list-disc list-inside">
             {Array.isArray(currentUserPermission) && currentUserPermission.length > 0 ? (
               currentUserPermission.map((element) => (
-                <li key={element.id} className="text-gray-700 dark:text-gray-300">{element.name || "No name available"}</li>
+                <li key={element.id} className="dark:text-gray-300">{element.name || "No name available"}</li>
               ))
             ) : (
               <li className="text-gray-500">No permissions available.</li>

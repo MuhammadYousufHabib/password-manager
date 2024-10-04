@@ -108,7 +108,7 @@ export function ProjectDetails({ expandedProjectId, projects }) {
   };
 
   return (
-    <div className="absolute left-0 w-full h-auto  border  shadow-lg z-10 p-4 rounded overflow-hidden h-screen bg-card dark:text-white">
+    <div className="absolute left-0 w-full h-auto  border  shadow-lg z-10 p-4 rounded overflow-hidden  bg-card dark:text-white">
       <h2 className="font-semibold">Fields:</h2>
       <div className="flex space-x-4 mb-2">
         <input
@@ -175,6 +175,7 @@ onClick={() => togglePasswordVisibility(field.id)}      >
         menuPortalTarget={document.body} 
         styles={{
           menuPortal: base => ({ ...base, zIndex: 9999 }), 
+          
         }}
         className="text-xs z-40"        
         onChange={(selected) => editingFieldId === field.id && setSelectedMode(selected)}
