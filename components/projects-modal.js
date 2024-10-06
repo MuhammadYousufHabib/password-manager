@@ -7,21 +7,23 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import CheckPermission from './CheckPermission';
 
 const ProjectsModal = ({ isOpen, onClose, onSubmit, project, users, loadUsers, assignedUsers, setassignedUsers, usersOfProject }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
-  useEffect(() => {
-    loadUsers(); 
-  }, []);
+useEffect(() => {
+  loadUsers(); 
+
+}, [])
+
 
   useEffect(() => {
     if (project) {
       setName(project.name);
       setDescription(project.description);
 
-      // Map the usersOfProject to get their IDs and set them as assignedUsers
       const assignedUserIds = usersOfProject?.users?.map(user => user.id) || [];
       setassignedUsers(assignedUserIds);
     } else {
@@ -75,6 +77,7 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project, users, loadUsers, a
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
+          <CheckPermission permission={"ASSIGN_PROJECT:CREATE"}>
 
           <div className="mb-4">
             <Label htmlFor="assignedUsers">Assign To</Label>
@@ -86,6 +89,7 @@ const ProjectsModal = ({ isOpen, onClose, onSubmit, project, users, loadUsers, a
               className="col-span-3"
             />
           </div>
+          </CheckPermission>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>

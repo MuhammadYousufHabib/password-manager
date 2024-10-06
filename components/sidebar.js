@@ -41,7 +41,6 @@ const Sidebar = () => {
 
   const getCurrentUser=  async()=>{
     const response =await get_me()
-    console.log(response.username)
    setcurrentUser(response.username)
    }
    useEffect(() => {
@@ -123,10 +122,10 @@ const Sidebar = () => {
           Profile 
         </Link>
         </nav>
-        <div className=" bottom-0 w-full my-4 ">
+  <div className=" bottom-0 w-full my-4 ">
   <button
     onClick={handleLogout}
-    className="flex items-center w-full sm:w-auto px-4 py-2 text-left sm:text-right text-red-600 hover:bg-red-500 hover:text-white"
+    className="flex items-center lg:w-full sm:w-auto px-4 py-2 text-left sm:text-right text-red-600 hover:bg-red-500 hover:text-white"
   >
     <LogOutIcon className="w-5 h-5 mr-3 sm:mr-0 sm:ml-3" />
     Logout

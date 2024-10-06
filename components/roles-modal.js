@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import CheckPermission from './CheckPermission';
 
 const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role ,setPermissionids,assignedPermissions}) => {
-  console.log(assignedPermissions,"these")
   const [roleData, setRoleData] = useState({
     name: '',
     permissions: []
@@ -66,6 +66,7 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role ,setPer
                 required
               />
             </div>
+            <CheckPermission permission={"ASSIGN_PERMISSION:CREATE"}>
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="permissions" className="text-right">
@@ -77,10 +78,11 @@ const RolesModal = ({ isOpen, onClose, onSubmit, permissionOptions, role ,setPer
                   options={permissionOptions.map(permission => ({ label: permission.name, value: permission.id }))}
                   value={permissionOptions.filter(permission => roleData.permissions.includes(permission.id)).map(permission => ({ label: permission.name, value: permission.id }))}
                   onChange={handlePermissionChange}
-                  className="col-span-3"
+                  className="col-span-3 "
                 />
               </div>
             </div>
+        </CheckPermission>
           </div>
           <DialogFooter>
             <Button type="submit">{role ? 'Update Role' : 'Add Role'}</Button>

@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Select from 'react-select';
+import CheckPermission from './CheckPermission';
 
 const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, roleids, setroleids, loadRoles, assignedRoles }) => {
 
@@ -129,6 +130,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, roleids, s
                 required
               />
             </div>}
+            <CheckPermission permission={"ASSIGN_ROLE:CREATE"}>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="roles" className="text-right">Roles</Label>
               <div className="col-span-3">
@@ -143,6 +145,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit, roleOptions, user, roleids, s
                 />
               </div>
             </div>
+           </CheckPermission>
           </div>
           <DialogFooter>
             <Button type="submit">{user ? 'Update User' : 'Add User'}</Button>

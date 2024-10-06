@@ -10,7 +10,7 @@ import { createUser,deleteUser,fetchUsers,updateUser } from '@/services/api/user
 import { assign_role, get_assigned_role ,assign_role_update} from '@/services/api/assign'
 import CheckPermission from './CheckPermission';
 export default function UsersPage({ users }) {
-  const [roleids, setroleids] = useState([])
+  const [roleids, setroleids] = useState(null)
   const [usersList, setUsersList] = useState(users); 
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
@@ -86,9 +86,10 @@ export default function UsersPage({ users }) {
         return
      }
       const updatedUserFromApi = await updateUser(updatedUser.id, updatedUser);
-      if(roleids.length>0)
+      if(roleids!==null)
 {      
   await assign_role_update({ user_id: Number(updatedUser.id), role_id: roleids })
+
 }
       setUsersList((prevUsers) =>
         prevUsers.map(user => 
@@ -124,7 +125,7 @@ export default function UsersPage({ users }) {
                 <TableCell>
                   <div className="flex space-x-2">
                   
-                  <CheckPermission permission={"USER:UPDATE"}>
+                  <CheckPermission permission={"USER:UPDATE" && "ASSIGN_ROLE:UPDATE" || "ASSIGN_ROLE:DELETE"}>
 
                     <Button onClick={() => handleEditUser(user)} size="sm" variant="outline">
                       <Pencil className="h-4 w-4 mr-1" />

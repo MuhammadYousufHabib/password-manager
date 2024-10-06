@@ -17,7 +17,7 @@ import { assign_permission, assign_permission_update, get_assigned_permission } 
 import CheckPermission from "./CheckPermission";
 
 export function RolesJs({ roles: initialRoles }) {
-  const [Permissionids, setPermissionids] = useState([]);
+  const [Permissionids, setPermissionids] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [permissionOptions, setPermissionOptions] = useState([]);
   const [editingRole, setEditingRole] = useState(null);
@@ -62,7 +62,7 @@ const [assignedPermissions, setassignedPermissions] = useState([])
   const handleUpdateRole = async (updatedRole) => {
     try {
       const role = await updateRole(updatedRole.id, updatedRole);
-      if (Permissionids.length > 0) {
+      if (Permissionids!==null) {
         await assign_permission_update
         ({
           role_id: Number(updatedRole.id),
@@ -114,7 +114,7 @@ const [assignedPermissions, setassignedPermissions] = useState([])
                 <TableCell>{role.name}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
-                    <CheckPermission permission={"ROLE:UPDATE"}>
+                    <CheckPermission permission={"ROLE:UPDATE" && "ASSIGN_ROLE:UPDATE" || "ASSIGN_ROLE:DELETE"}>
                       <Button
                         onClick={() => handleEditRole(role)}
                         size="sm"

@@ -12,7 +12,8 @@ import { assign_project, get_assigned_project_users,assign_project_update } from
 import CheckPermission from './CheckPermission';
 
 export function ProjectsJs({ projects }) {
-  const [assignedUsers, setAssignedUsers] = useState([]); 
+  const [first, setfirst] = useState(false)
+  const [assignedUsers, setAssignedUsers] = useState(null); 
   const [isEditing, setIsEditing] = useState(null); 
   const [newKey, setNewKey] = useState(''); 
   const [newValue, setNewValue] = useState(''); 
@@ -79,7 +80,7 @@ const [usersOfProject, setusersOfProject] = useState([])
           project.id === updatedProject.id ? response : project 
         )
       );
-      if(assignedUsers.length>0)
+      if(assignedUsers!==null)
         {      
           await assign_project_update({ user_id:assignedUsers, project_id: Number(updatedProject.id) })
         } 
@@ -125,7 +126,7 @@ const [usersOfProject, setusersOfProject] = useState([])
                   <TableCell className="p-4">{project.description}</TableCell>
                   <TableCell className="p-4">
                     <div className="flex space-x-2">
-                    <CheckPermission permission={"PROJECT:UPDATE"}>
+                    <CheckPermission permission={"PROJECT:UPDATE" &&"ASSIGN_PROJECT:UPDATE" || "ASSIGN_PROJECT:DELETE"}>
 
                       <Button size="sm" variant="outline" onClick={() => handleEditProject(project)}>
                         <Pencil className="h-4 w-4 mr-1" />
@@ -142,7 +143,7 @@ const [usersOfProject, setusersOfProject] = useState([])
                     </div>
                   </TableCell>
                   <TableCell className="p-4">
-                  <CheckPermission permission={"FIELD:GET:ALL"}>
+                  <CheckPermission permission={"FIELD:GET:ALL" || "FIELD:GET:STAGGING" || "FIELD:GET:DEPLOYMENT" || "FIELD:GET:DEVELOPMENT"}>
 
                     <Button size="sm" variant="outline" onClick={() => toggleExpandProject(project.id)}>
                       {expandedProjectId === project.id ? (
@@ -171,6 +172,7 @@ const [usersOfProject, setusersOfProject] = useState([])
                           setIsEditing={setIsEditing}
                           expandedProjectId={expandedProjectId}
                           projects={projects}
+                          setProjectList={setProjectList}
 
                         />
                     </TableCell>
@@ -188,6 +190,8 @@ const [usersOfProject, setusersOfProject] = useState([])
         Add Project
       </Button>
       </CheckPermission>
+      <CheckPermission permission={"PROJECT:CREATE" || "PROJECT:UPDATE " || "ASSIGN_PROJECT:CREATE"}>
+
       <ProjectsModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
@@ -200,7 +204,7 @@ const [usersOfProject, setusersOfProject] = useState([])
         usersOfProject={usersOfProject}
         setUsersOfProject={setusersOfProject}
 
-/>
+/> </CheckPermission>
     </div>
   );
 }

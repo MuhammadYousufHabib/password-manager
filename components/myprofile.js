@@ -12,6 +12,7 @@ export function ProfileJS() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState('');
   const [editedEmail, setEditedEmail] = useState('');
+  const [editedPassword, setEditedPassword] = useState('');
 
   const fetchUserData = async () => {
     try {
@@ -19,6 +20,7 @@ export function ProfileJS() {
       setCurrentUser(userResponse);
       setEditedName(userResponse.name);
       setEditedEmail(userResponse.email);
+      setEditedPassword(userResponse.password);
       const roleResponse = await me_role();
       setCurrentUserRole(roleResponse);
       const permissionResponse = await me_permission();
@@ -42,10 +44,11 @@ export function ProfileJS() {
     try {
       await update_me({ 
         name: editedName, 
-        email: editedEmail 
+        email: editedEmail,
+        password: editedPassword 
       });
-      fetchUserData();  // Refresh the user data after update
-      setIsEditing(false); // Exit edit mode after saving
+      fetchUserData();  
+      setIsEditing(false); 
     } catch (err) {
       setError(err.message || "Failed to update user info");
     }
@@ -55,10 +58,9 @@ export function ProfileJS() {
   if (error) return <p className="text-red-500">Error: {error}</p>;
 
   return (      
-    <div className="max-w-lg mx-auto p-4  shadow-lg rounded-lg space-y-2 bg-card dark:text-white">
-      <h2 className="text-lg font-bold">User Profile</h2>
+    <div className="max-w-lg mx-auto dark:border-2 dark:border-gray-900 p-4  shadow-lg rounded-lg space-y-2 bg-card dark:text-white text-sm">
       <div>
-        <p className="font-semibold">Name:</p>
+        <p className="font-semibold">Name</p>
         {isEditing ? (
           <input 
             type="text" 
@@ -71,11 +73,25 @@ export function ProfileJS() {
         )}
       </div>
       <div>
-        <p className="font-semibold">Username:</p>        
+        <p className="font-semibold">Username</p>        
           <p className="border rounded-md p-1 w-full bg-card dark:text-white" >{currentUser.username || "No name available"}</p>
       </div>
+      <div>
+        <p className="font-semibold">Password</p>
+        {isEditing ? (
+          <input 
+          type="password" 
+          placeholder='Enter new password If u want'
+          value={editedPassword} 
+          onChange={(e) => setEditedPassword(e.target.value)} 
+          className="border rounded-md p-1 w-full bg-card dark:text-white" 
+          />
+        ) : (
+          <p>{currentUser.password || "🚫"}</p>
+        )}
+      </div>
       <div >
-        <p className="font-semibold">Email:</p>
+        <p className="font-semibold">Email</p>
         {isEditing ? (
           <input 
             type="email" 
@@ -91,7 +107,7 @@ export function ProfileJS() {
         {isEditing ? "Cancel" : "Edit"}
       </Button>
       {isEditing && (
-        <Button onClick={handleSaveChanges} className="mt-2 bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600">
+        <Button onClick={handleSaveChanges} className="mt-2 ml-2 bg-gray-700 text-white py-1 px-3 rounded hover:bg-gray-900">
           Save Changes
         </Button>
       )}

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Select from "react-select";
+
 import { fetchModes } from "@/services/api/modes";
 import { createField, deleteField, updateKey } from "@/services/api/fields"; 
 import CheckPermission from "./CheckPermission";
+import { get_projects } from "@/services/api/me";
 
-export function ProjectDetails({ expandedProjectId, projects }) {
+export function ProjectDetails({ expandedProjectId }) {
   const [passwordVisibility, setPasswordVisibility] = useState({}); 
   const [key, setKey] = useState(""); 
   const [value, setValue] = useState(""); 
@@ -13,6 +15,7 @@ export function ProjectDetails({ expandedProjectId, projects }) {
   const [selectedMode, setSelectedMode] = useState(null); 
   const [currentFields, setCurrentFields] = useState([]); 
   const [editingFieldId, setEditingFieldId] = useState(null); 
+  const [projects, setprojects] = useState([])
 
   const togglePasswordVisibility = (fieldId) => {
     setPasswordVisibility((prev) => ({
@@ -33,9 +36,13 @@ export function ProjectDetails({ expandedProjectId, projects }) {
       console.error("Error fetching modes:", error);
     }
   };
-
+const getProjects =async()=> {
+ const response=await get_projects()
+    setprojects(response)
+}
   useEffect(() => {
     fetchModeList();
+    getProjects();
   }, []);
 
   useEffect(() => {
@@ -55,27 +62,35 @@ export function ProjectDetails({ expandedProjectId, projects }) {
       };
       try {
         await createField(newField);
-        setCurrentFields((prevFields) => {
-          const fieldsArray = Array.isArray(prevFields) ? prevFields : [];
-          setKey("");
+        setCurrentFields((prevFields) => [...prevFields, newField]);
+        setKey("");
         setValue("");
-        setSelectedMode(null); 
-          return [...fieldsArray, newField]; 
-        });        
-        
+        setSelectedMode(null);
       } catch (error) {
         console.error("Error adding field:", error);
       }
+      try
+   {   await getProjects();}
+   catch(error){
+    console.log("ERROR")
+   }
+
     }
   };
 
   const handleDeleteField = async (fieldId) => {
     try {
+
       await deleteField(fieldId);
       const updatedFields = currentFields.filter((field) => field.id !== fieldId);
       setCurrentFields(updatedFields);
     } catch (error) {
       console.error("Error deleting field:", error);
+    }
+    try
+    {   await getProjects();}
+    catch(error){
+     console.log("ERROR")
     }
   };
 
@@ -86,49 +101,58 @@ export function ProjectDetails({ expandedProjectId, projects }) {
     setSelectedMode(modeOptions.find(option => option.value === field.mode_id) || null);
   };
 
-  const handleUpdateField = async () => {
-    if (editingFieldId && key && value) {
-      const updatedFieldData = {
-        project_id: Number(expandedProjectId),
-        key,
-        value,
-        mode_id: selectedMode ? selectedMode.value : null,
-      };
-      try {
-        await updateKey(editingFieldId, updatedFieldData);
-        const updatedFields = currentFields.map(field =>
-          field.id === editingFieldId ? { ...field, ...updatedFieldData } : field
-        );
-        setCurrentFields(updatedFields);
-        setEditingFieldId(null);
-        setKey(""); 
-        setValue("");
-        setSelectedMode(null);
-      } catch (error) {
-        console.error("Error updating field:", error);
-      }
+const handleUpdateField = async () => {
+  if (editingFieldId && key && value) {
+    const updatedFieldData = {
+      project_id: Number(expandedProjectId),
+      key,
+      value,
+      mode_id: selectedMode ? Number(selectedMode.value) : null,
+    };
+    console.log(updatedFieldData,":)")
+    try {
+      await updateKey(editingFieldId, updatedFieldData);
+      const updatedFields = currentFields.map(field =>
+        field.id === editingFieldId ? { ...field, ...updatedFieldData } : field
+      );
+      setCurrentFields(updatedFields);
+      setEditingFieldId(null); 
+      setKey("");
+      setValue("");
+      setSelectedMode(null);
+    } catch (error) {
+      console.error("Error updating field:", error);
     }
-  };
+  }
+  // try
+  // {   await getProjects();}
+  // catch(error){
+  //  console.log("ERROR")
+  // }
+};
+
 
   return (
-    <div className="absolute left-0 w-full bg-white border border-gray-200 shadow-lg z-10 p-4 rounded overflow-hidden h-screen">
+
+    <div className="absolute left-0 w-full bg-white border border-gray-200 shadow-lg z-10 p-4 rounded overflow-hidden h-fit ">
+        <CheckPermission permission={"FIELD:ADD"}>
       <h2 className="font-semibold">Fields:</h2>
-      <div className="flex space-x-4 mb-2">
+      <div className="flex space-x-4 mb-2 h-fit">
         <input
           type="text"
-          value={editingFieldId && " " }
+          value={editingFieldId ? " " :key}
           onChange={(e) => setKey(e.target.value)}
           placeholder="Enter key"
           className="border rounded px-2 py-1 w-1/4"
-          readOnly={editingFieldId} 
+          readOnly={!!editingFieldId} 
         />
         <input
           type="text"
-          value={editingFieldId && " "}
+          value={editingFieldId ? " " :value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Enter value"
           className="border rounded px-2 py-1 w-1/4"
-          readOnly={editingFieldId}        />
+          readOnly={!!editingFieldId}        />
         <Select
           value={editingFieldId? " " :  selectedMode}
           onChange={selected => !editingFieldId && setSelectedMode(selected)} 
@@ -136,17 +160,16 @@ export function ProjectDetails({ expandedProjectId, projects }) {
           placeholder="Select Mode"
           isClearable
           className="w-1/4"
-          readOnly={editingFieldId} 
+          readOnly={!!editingFieldId} 
         />
-        <CheckPermission permission={"FIELD:ADD"}>
           <Button variant="outline" size="sm" onClick={handleAddField}>
             Add
           </Button>
-        </CheckPermission>
       </div>
+        </CheckPermission>
 
-      <h3 className="font-semibold mt-4">Existing Fields:</h3>
-      <ul>
+{   currentFields.length>0 &&   <h3 className="font-semibold mt-4">Existing Fields:</h3>
+}      <ul>
   {currentFields?.length > 0 && currentFields.map((field) => (
     <li key={field.id} className="flex justify-left mb-2 space-x-4 items-center"> 
       <input
@@ -197,213 +220,5 @@ onClick={() => togglePasswordVisibility(field.id)}      >
 </ul>
 
     </div>
-  );}
-
-// export function ProjectDetails({ projects, expandedProjectId }) {
-//   const [modeOptions, setModeOptions] = useState([]); // State to store mode options
-//   const [currentFields, setCurrentFields] = useState([]); 
-//   const [key, setKey] = useState(""); // For adding new field's key
-//   const [value, setValue] = useState(""); // For adding new field's value
-//   const [selectedMode, setSelectedMode] = useState(null); // For adding new field's mode
-//   const [editingFieldId, setEditingFieldId] = useState(null); // Track the ID of the field being edited
-
-//   // Fetch modes from the API and set options for the mode dropdown
-//   const fetchModeList = async () => {
-//     try {
-//       const modes = await fetchModes();
-//       const formattedModes = modes.map((mode) => ({
-//         label: mode.name,
-//         value: mode.id,
-//       }));
-//       setModeOptions(formattedModes);
-//     } catch (error) {
-//       console.error("Error fetching modes:", error);
-//     }
-//   };
-
-//   // Fetch project data and set current fields based on selected project
-//   useEffect(() => {
-//     fetchModeList();
-
-//     if (projects.length > 0) {
-//       const currentProject = projects.find((project) => project.id === expandedProjectId);
-//       if (currentProject) {
-//         setCurrentFields(currentProject.fields); 
-//       }
-//     }
-//   }, [expandedProjectId, projects]);
-
-//   // Function to add a new field
-//   const handleAddField = async () => {
-//     if (key && value) {
-//       const newField = {
-//         project_id: Number(expandedProjectId),
-//         key,
-//         value,
-//         mode_id: selectedMode ? selectedMode.value : null,
-//       };
-  
-//       try {
-//         const createdField = await createField(newField);
-  
-//         setCurrentFields((prevFields) => {
-//           const fieldsArray = Array.isArray(prevFields) ? prevFields : [];
-//           return [...fieldsArray, { ...createdField, key, value, mode_id: selectedMode?.value }];
-//         });
-  
-//         setKey("");
-//         setValue("");
-//         setSelectedMode(null);
-//       } catch (error) {
-//         console.error("Error adding field:", error);
-//       }
-//     }
-//   };
-
-//   // Function to delete a field
-//   const handleDeleteField = async (fieldId) => {
-//     try {
-//       await deleteField(fieldId);
-//       const updatedFields = currentFields.filter((field) => field.id !== fieldId);
-//       setCurrentFields(updatedFields);
-//     } catch (error) {
-//       console.error("Error deleting field:", error);
-//     }
-//   };
-
-//   // Function to edit a field
-//   const handleEditField = (field) => {
-//     setEditingFieldId(field.id); // Set the ID of the field being edited
-//     setKey(field.key); // Pre-fill the key value
-//     setValue(field.value); // Pre-fill the value
-//     setSelectedMode(modeOptions.find((option) => option.value === field.mode_id) || null); // Pre-select the correct mode
-//   };
-
-//   // Function to update a field
-//   const handleUpdateField = async () => {
-//     if (editingFieldId && key && value) {
-//       const updatedFieldData = {
-//         project_id: Number(expandedProjectId),
-//         key,
-//         value,
-//         mode_id: selectedMode ? selectedMode.value : null,
-//       };
-  
-//       try {
-//         await updateKey(editingFieldId, updatedFieldData);
-  
-//         const updatedFields = currentFields.map((field) =>
-//           field.id === editingFieldId ? { ...field, ...updatedFieldData } : field
-//         );
-  
-//         setCurrentFields(updatedFields);
-//         setEditingFieldId(null); // Clear the edit state
-//         setKey("");
-//         setValue("");
-//         setSelectedMode(null);
-//       } catch (error) {
-//         console.error("Error updating field:", error);
-//       }
-//     }
-//   };
-
-//   return (
-//     <div className="absolute left-0 w-full bg-white border border-gray-200 shadow-lg z-10 p-4 rounded overflow-hidden h-screen">
-//       <h2 className="font-semibold">Fields:</h2>
-
-//       {currentFields.length > 0 ? (
-//         currentFields.map((field) => (
-//           <div key={field.id} className="flex space-x-4 mb-2">
-//             {/* Key input */}
-//             <input
-//               type="text"
-//               placeholder="Enter key"
-//               className="border rounded px-2 py-1 w-1/4"
-//               value={editingFieldId === field.id ? key : field.key} // Editable only for the field being edited
-//               readOnly={editingFieldId !== field.id} // Read-only for all other fields
-//               onChange={(e) => setKey(e.target.value)} // Update key when editing
-//             />
-
-//             {/* Value input */}
-//             <input
-//               type="text"
-//               placeholder="Enter value"
-//               className="border rounded px-2 py-1 w-1/4"
-//               value={editingFieldId === field.id ? value : field.value} // Editable only for the field being edited
-//               readOnly={editingFieldId !== field.id} // Read-only for all other fields
-//               onChange={(e) => setValue(e.target.value)} // Update value when editing
-//             />
-
-//             {/* Mode selection */}
-//             <Select
-//               options={modeOptions}
-//               placeholder="Select Mode"
-//               className="w-1/4"
-//               value={editingFieldId === field.id ? selectedMode : modeOptions.find((option) => option.value === field.mode_id)} // Editable only for the field being edited
-//               isDisabled={editingFieldId !== field.id} // Disabled for all other fields
-//               onChange={(selectedOption) => setSelectedMode(selectedOption)} // Update mode when editing
-//             />
-
-//             {/* Update button */}
-//             {editingFieldId === field.id ? (
-//               <button
-//                 onClick={handleUpdateField}
-//                 className="bg-blue-500 text-white px-2 py-1 rounded"
-//               >
-//                 Save
-//               </button>
-//             ) : (
-//               <button
-//                 onClick={() => handleEditField(field)}
-//                 className="bg-yellow-500 text-white px-2 py-1 rounded"
-//               >
-//                 Edit
-//               </button>
-//             )}
-
-//             {/* Delete button */}
-//             <button
-//               onClick={() => handleDeleteField(field.id)}
-//               className="bg-red-500 text-white px-2 py-1 rounded"
-//             >
-//               Delete
-//             </button>
-//           </div>
-//         ))
-//       ) : (
-//         <p>No fields available for this project.</p>
-//       )}
-
-//       {/* Form to add a new field */}
-//       <div className="flex space-x-4 mb-2">
-//         <input
-//           type="text"
-//           placeholder="Enter key"
-//           className="border rounded px-2 py-1 w-1/4"
-//           value={key}
-//           onChange={(e) => setKey(e.target.value)} // Update key
-//         />
-//         <input
-//           type="text"
-//           placeholder="Enter value"
-//           className="border rounded px-2 py-1 w-1/4"
-//           value={value}
-//           onChange={(e) => setValue(e.target.value)} // Update value
-//         />
-//         <Select
-//           options={modeOptions}
-//           placeholder="Select Mode"
-//           className="w-1/4"
-//           value={selectedMode}
-//           onChange={(selectedOption) => setSelectedMode(selectedOption)} // Update mode
-//         />
-//         <button
-//           onClick={handleAddField}
-//           className="bg-green-500 text-white px-2 py-1 rounded"
-//         >
-//           Add Field
-//         </button>
-//       </div>
-//     </div>
-//   );
-// }
+  );
+}
