@@ -42,5 +42,14 @@ npm run dev
 ### Login Credentials
 
     Username: admin
-    Password: 1
-    
+    Password: 123
+
+### Backend setup
+ Prerequisites
+Python 3.8+
+PostgreSQL
+### Setup Instructions
+Clone the Repository
+**Install Required Libraries Install dependencies from requirements.txt pip install -r requirements.txt
+****Create a .env file in the root of your project with your PostgreSQL credentials: DATABASE_URL="postgres://username:password@localhost/db_name"**
+**Run the Application Start the FastAPI server with Uvicorn: uvicorn app.main:app --reload**
