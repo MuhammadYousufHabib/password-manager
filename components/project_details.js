@@ -62,7 +62,7 @@ const getProjects =async()=> {
       };
       try {
         await createField(newField);
-        setCurrentFields((prevFields) => [...prevFields, newField]);
+        setCurrentFields((prevFields) => Array.isArray(prevFields) ? [...prevFields, newField] : [newField]);
         setKey("");
         setValue("");
         setSelectedMode(null);
@@ -134,7 +134,7 @@ const handleUpdateField = async () => {
 
   return (
 
-    <div className="absolute left-0 w-full bg-white border border-gray-200 shadow-lg z-10 p-4 rounded overflow-hidden h-fit ">
+    <div className="absolute left-0 w-full  border shadow-lg z-10 p-4 rounded overflow-hidden h-auto  bg-card dark:text-white">
         <CheckPermission permission={"FIELD:ADD"}>
       <h2 className="font-semibold">Fields:</h2>
       <div className="flex space-x-4 mb-2 h-fit">
@@ -143,7 +143,7 @@ const handleUpdateField = async () => {
           value={editingFieldId ? " " :key}
           onChange={(e) => setKey(e.target.value)}
           placeholder="Enter key"
-          className="border rounded px-2 py-1 w-1/4"
+          className="border rounded px-2 py-1 w-1/4 bg-card dark:text-white"
           readOnly={!!editingFieldId} 
         />
         <input
@@ -151,7 +151,7 @@ const handleUpdateField = async () => {
           value={editingFieldId ? " " :value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Enter value"
-          className="border rounded px-2 py-1 w-1/4"
+          className="border rounded px-2 py-1 w-1/4 bg-card dark:text-white"
           readOnly={!!editingFieldId}        />
         <Select
           value={editingFieldId? " " :  selectedMode}
@@ -159,8 +159,13 @@ const handleUpdateField = async () => {
           options={modeOptions}
           placeholder="Select Mode"
           isClearable
-          className="w-1/4"
+          menuPortalTarget={document.body} 
+            styles={{
+              menuPortal: base => ({ ...base, zIndex: 9999 }), 
+            }}
+            className="text-xs z-40 w-1/4"          
           readOnly={!!editingFieldId} 
+          
         />
           <Button variant="outline" size="sm" onClick={handleAddField}>
             Add
@@ -168,22 +173,22 @@ const handleUpdateField = async () => {
       </div>
         </CheckPermission>
 
-{   currentFields.length>0 &&   <h3 className="font-semibold mt-4">Existing Fields:</h3>
+{    currentFields!== null && <h3 className="font-semibold mt-4">Existing Fields:</h3>
 }      <ul>
-  {currentFields?.length > 0 && currentFields.map((field) => (
+  { currentFields!== null && currentFields.map((field) => (
     <li key={field.id} className="flex justify-left mb-2 space-x-4 items-center"> 
       <input
         type="text"
         value={editingFieldId === field.id ? key : field.key}
         onChange={(e) => editingFieldId === field.id && setKey(e.target.value)}
-        className="border rounded px-2 py-1 w-1/4"
+        className="border rounded px-2 py-1 w-1/4 bg-card dark:text-white"
       />
       <div className="relative w-1/4"> 
         <input
 type={passwordVisibility[field.id] ? "text" : "password"}
           value={editingFieldId === field.id ? value : field.value}
           onChange={(e) => editingFieldId === field.id && setValue(e.target.value)}
-          className="border rounded px-2 py-1 w-full"
+          className="border rounded px-2 py-1 w-full bg-card dark:text-white"
         />
       </div>
       <button        className="text-xs underline" 
@@ -196,7 +201,11 @@ onClick={() => togglePasswordVisibility(field.id)}      >
         isClearable
         onChange={(selected) => editingFieldId === field.id && setSelectedMode(selected)}
         options={modeOptions}
-        className="w-1/4"
+        menuPortalTarget={document.body} 
+            styles={{
+              menuPortal: base => ({ ...base, zIndex: 9999 }), 
+            }}
+            className="text-xs z-40"
       />
       
       <CheckPermission permission={"FIELD:DELETE"}>
